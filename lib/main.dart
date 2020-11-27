@@ -1,14 +1,20 @@
-import 'package:cryptogram/models/stellar.dart';
-import 'package:cryptogram/views/account/create.dart';
-import 'package:cryptogram/views/account/index.dart';
-import 'package:cryptogram/views/wrapper.dart';
+import 'package:cryptogram/route_generator.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
 
-import 'views/chat/index.dart';
-
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final Future<Database> database = openDatabase(
+      // Set the path to the database. Note: Using the `join` function from the
+      // `path` package is best practice to ensure the path is correctly
+      // constructed for each platform.
+      join(await getDatabasesPath(), 'database.db'), onCreate: (db, version) {
+    return db.execute(
+        'CREATE TABLE accounts(accountID TINYTEXT PRIMARY KEY, customName TEXT)');
+  }, version: 1);
   runApp(MyApp());
 }
 
@@ -18,23 +24,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Cryptogram',
       initialRoute: '/',
-      routes: {
-        // '/'
-        Wrapper.route: (context) => Wrapper(),
-        // '/account'
-        AccountView.route: (context) => AccountView(),
-        CreateAccountView.route: (context) => CreateAccountView(),
-        // '/chat'
-        ChatView.route: (context) => ChatView(),
-      },
+      onGenerateRoute: RouteGenerator.generateRoute,
       theme: ThemeData(
           primarySwatch: Colors.indigo,
           textTheme:
               GoogleFonts.openSansTextTheme(Theme.of(context).textTheme)),
-      home: ChangeNotifierProvider(
-        create: (_) => new Stellar(),
-        child: Wrapper(),
-      ),
     );
   }
 }
