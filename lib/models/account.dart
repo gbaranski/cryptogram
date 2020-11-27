@@ -1,13 +1,23 @@
 class Account {
   final String accountID;
   final String customName;
+  final String secretSeed;
 
   Map<String, dynamic> toMap() {
     return {
       'accountID': accountID,
       'customName': customName,
+      'secretSeed': secretSeed
     };
   }
 
-  Account({this.accountID, this.customName});
+  factory Account.fromMap(Map<String, dynamic> map) {
+    return Account(
+      accountID: map['accountID'],
+      customName: map['customName'],
+      secretSeed: map['secretSeed'],
+    );
+  }
+
+  Account({this.accountID, this.customName, this.secretSeed});
 }
