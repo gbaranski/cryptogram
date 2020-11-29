@@ -1,3 +1,4 @@
+import 'package:cryptogram/views/account/create.dart';
 import 'package:cryptogram/views/error_screen.dart';
 
 import 'views/index.dart';
@@ -14,6 +15,8 @@ class RouteGenerator {
           return IndexView();
         case ChatView.route:
           return ChatView();
+        case CreateAccountView.route:
+          return CreateAccountView();
         case RestoreAccountView.route:
           return RestoreAccountView();
         case AccountView.route:
