@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:cryptogram/views/account/get_password.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:stellar_flutter_sdk/stellar_flutter_sdk.dart' hide Row;
+import 'package:cryptography/cryptography.dart' hide KeyPair;
+import 'package:stellar_flutter_sdk/stellar_flutter_sdk.dart' hide Row, Account;
 
 class CreateAccountView extends StatefulWidget {
   static const String route = '/account/create';
@@ -14,6 +17,24 @@ class CreateAccountView extends StatefulWidget {
 
 class _CreateAccountViewState extends State<CreateAccountView> {
   KeyPair _keyPair = KeyPair.random();
+
+  Future<void> addAccount(BuildContext context, String customName) async {
+    // final String password = await getUserPassword(context);
+    final cipher = CipherWithAppendedMac(aesCtr, Hmac(sha256));
+    final nonce = Nonce.randomBytes(12);
+
+    final secretKey = SecretKey.randomBytes(16);
+    final encryptedSecret = await cipher.encrypt(
+        utf8.encode(_keyPair.secretSeed),
+        secretKey: secretKey,
+        nonce: nonce);
+
+    print("Encrypted Secret: $encryptedSecret");
+    print("Nonce: $nonce");
+    print("UTF8 secret: ${utf8.decode(encryptedSecret)}");
+    // final account = Account(accountID: _keyPair.accountId, );
+    // DatabaseService.addAccount()
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +82,7 @@ class _CreateAccountViewState extends State<CreateAccountView> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    print(await getUserPassword(context));
+                    addAccount(context, "SomeCustomName");
                   },
                   child: Text("Continue"),
                 ),
