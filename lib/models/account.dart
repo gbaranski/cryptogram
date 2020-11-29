@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class Account {
   final String accountID;
   final String customName;
@@ -19,5 +21,5 @@ class Account {
     );
   }
 
-  Account({this.accountID, this.customName, this.secretSeed});
+  Account({@required this.accountID, @required this.customName, @required this.secretSeed});
 }
