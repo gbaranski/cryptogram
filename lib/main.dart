@@ -17,10 +17,13 @@ class MyApp extends StatelessWidget {
       title: 'Cryptogram',
       initialRoute: '/',
       onGenerateRoute: RouteGenerator.generateRoute,
+      themeMode: ThemeMode.dark,
       theme: ThemeData(
-          primarySwatch: Colors.indigo,
-          textTheme:
-              GoogleFonts.openSansTextTheme(Theme.of(context).textTheme)),
+          brightness: Brightness.dark,
+          colorScheme: ColorScheme.dark(),
+          scaffoldBackgroundColor: Color(0xFF212121),
+          textTheme: GoogleFonts.montserratTextTheme(
+              Theme.of(context).primaryTextTheme)),
     );
   }
 }
