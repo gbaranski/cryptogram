@@ -1,6 +1,7 @@
 import 'package:cryptogram/models/account.dart';
 import 'package:cryptogram/services/database.dart';
 import 'package:cryptogram/views/account/create.dart';
+import 'package:cryptogram/views/chat/index.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -38,6 +39,18 @@ class _IndexViewState extends State<IndexView> {
     }
   }
 
+  void navigateToChatScreen(BuildContext context, int index) {
+    final selectedAccount = _accounts[index];
+    if (selectedAccount == null)
+      throw new Exception(
+          "Error when navigating to chat screen: Couldn't find proper accounnt");
+    Navigator.pushReplacementNamed(
+      context,
+      ChatView.route,
+      arguments: selectedAccount,
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -48,7 +61,7 @@ class _IndexViewState extends State<IndexView> {
           delegate: SliverChildBuilderDelegate((context, i) {
         final account = _accounts[i];
         return ListTile(
-          onTap: () {},
+          onTap: () => navigateToChatScreen(context, i),
           leading: Icon(MdiIcons.accountKey),
           trailing: PopupMenuButton<AccountAction>(
             onSelected: (action) => onAccountAction(action, i),
@@ -71,7 +84,7 @@ class _IndexViewState extends State<IndexView> {
                     leading: Icon(Icons.edit),
                     title: Text(
                       "Edit",
-                      style: TextStyle(color: Colors.black38),
+                      style: TextStyle(color: Colors.white60),
                     ),
                   )),
             ],
