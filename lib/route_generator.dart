@@ -18,7 +18,9 @@ class RouteGenerator {
               if (account == null) return AccountsList();
               return IndexView(account);
             case NewConversationView.route:
-              return NewConversationView();
+              final Account account = settings.arguments;
+              if (account == null) return AccountsList();
+              return NewConversationView(account);
             case AccountsList.route:
               return AccountsList();
             case CreateAccountView.route:
