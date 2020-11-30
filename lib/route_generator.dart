@@ -1,10 +1,10 @@
+import 'package:cryptogram/models/account.dart';
+import 'package:cryptogram/views/account/accounts_list.dart';
 import 'package:cryptogram/views/account/create.dart';
 import 'package:cryptogram/views/error_screen.dart';
+import 'package:cryptogram/views/index.dart';
 
-import 'views/index.dart';
-import 'views/account/index.dart';
 import 'views/account/restore.dart';
-import 'views/chat/index.dart';
 import 'package:flutter/material.dart';
 
 class RouteGenerator {
@@ -13,15 +13,15 @@ class RouteGenerator {
         builder: (context) {
           switch (settings.name) {
             case IndexView.route:
-              return IndexView();
-            case ChatView.route:
-              return ChatView();
+              final Account account = settings.arguments;
+              if (account == null) return AccountsList();
+              return IndexView(account);
+            case AccountsList.route:
+              return AccountsList();
             case CreateAccountView.route:
               return CreateAccountView();
             case RestoreAccountView.route:
               return RestoreAccountView();
-            case AccountView.route:
-              return AccountView();
             default:
               return ErrorScreen();
           }
