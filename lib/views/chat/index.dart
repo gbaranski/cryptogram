@@ -1,5 +1,6 @@
 import 'package:cryptogram/models/account.dart';
 import 'package:cryptogram/views/account/accounts_list.dart';
+import 'package:cryptogram/views/chat/new_conversation.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:stellar_flutter_sdk/stellar_flutter_sdk.dart' hide Account;
@@ -34,7 +35,8 @@ class _ChatViewState extends State<ChatView> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
+        onPressed: () =>
+            Navigator.pushNamed(context, NewConversationView.route),
         icon: Icon(MdiIcons.messagePlusOutline),
         label: Text("Start chat"),
       ),

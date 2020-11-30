@@ -2,6 +2,7 @@ import 'package:cryptogram/models/account.dart';
 import 'package:cryptogram/services/blockchain.dart';
 import 'package:cryptogram/views/account/accounts_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class AccountView extends StatelessWidget {
@@ -11,17 +12,16 @@ class AccountView extends StatelessWidget {
 
   Future<void> executeAction(BuildContext context, dynamic Function() action,
       [String onSuccess]) async {
-    ScaffoldMessenger.of(context)
-        .hideCurrentSnackBar(reason: SnackBarClosedReason.timeout);
-
+    Scaffold.of(context)
+        .hideCurrentSnackBar(reason: SnackBarClosedReason.remove);
     try {
       await action();
       if (onSuccess != null)
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        Scaffold.of(context).showSnackBar(SnackBar(
           content: Text(onSuccess),
         ));
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      Scaffold.of(context).showSnackBar(SnackBar(
         content: Text(e.toString()),
       ));
     }
@@ -36,7 +36,14 @@ class AccountView extends StatelessWidget {
           SliverList(
             delegate: SliverChildListDelegate([
               ListTile(
-                onTap: () {},
+                onTap: () {
+                  Clipboard.setData(ClipboardData(text: account.accountID));
+                  HapticFeedback.lightImpact();
+
+                  Scaffold.of(context).showSnackBar(const SnackBar(
+                    content: Text("Copied AccountID to clipboard"),
+                  ));
+                },
                 isThreeLine: true,
                 leading: Icon(
                   MdiIcons.accountKey,
