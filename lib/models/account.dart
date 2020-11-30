@@ -1,9 +1,11 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 
 class Account {
   final String accountID;
   final String customName;
-  final String secretSeed;
+  final Uint8List secretSeed;
 
   Map<String, dynamic> toMap() {
     return {
@@ -21,5 +23,8 @@ class Account {
     );
   }
 
-  Account({@required this.accountID, @required this.customName, @required this.secretSeed});
+  Account(
+      {@required this.accountID,
+      @required this.customName,
+      @required this.secretSeed});
 }
