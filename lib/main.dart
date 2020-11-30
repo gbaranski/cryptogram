@@ -21,6 +21,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
           brightness: Brightness.dark,
           colorScheme: const ColorScheme.dark(),
+          bottomNavigationBarTheme: BottomNavigationBarThemeData(
+              selectedItemColor: Colors.indigoAccent),
+          floatingActionButtonTheme: FloatingActionButtonThemeData(
+              backgroundColor: Colors.deepPurpleAccent,
+              foregroundColor: Colors.white.withAlpha(240)),
           scaffoldBackgroundColor: Colors.grey.shade900,
           textTheme: GoogleFonts.montserratTextTheme(
               Theme.of(context).primaryTextTheme)),
