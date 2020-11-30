@@ -12,7 +12,7 @@ class DatabaseService {
       return db.execute(
           'CREATE TABLE accounts(accountID TEXT PRIMARY KEY, secretSeed BLOB, customName TEXT)');
     }, version: 1);
-    print("DB: ${_database}");
+    print("DB: $_database");
   }
 
   static Future<List<Account>> getAccounts() async {
