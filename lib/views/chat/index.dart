@@ -35,8 +35,8 @@ class _ChatViewState extends State<ChatView> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () =>
-            Navigator.pushNamed(context, NewConversationView.route),
+        onPressed: () => Navigator.pushNamed(context, NewConversationView.route,
+            arguments: widget.account),
         icon: Icon(MdiIcons.messagePlusOutline),
         label: Text("Start chat"),
       ),
