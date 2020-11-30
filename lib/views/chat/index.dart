@@ -1,24 +1,43 @@
-import 'package:cryptogram/views/index.dart';
+import 'package:cryptogram/models/account.dart';
+import 'package:cryptogram/views/account/accounts_list.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:stellar_flutter_sdk/stellar_flutter_sdk.dart' hide Account;
 
 enum MiscAction {
   switch_account,
 }
 
-class ChatView extends StatelessWidget {
-  static const route = '/chat';
+class ChatView extends StatefulWidget {
+  ChatView(this.account);
+  final Account account;
+
+  @override
+  _ChatViewState createState() => _ChatViewState();
+}
+
+class _ChatViewState extends State<ChatView> {
+  AccountResponse accountData;
 
   void onMiscAction(BuildContext context, MiscAction action) {
     if (action == MiscAction.switch_account) {
-      Navigator.pushReplacementNamed(context, IndexView.route);
+      Navigator.pushReplacementNamed(context, AccountsList.route);
     }
   }
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context).settings;
     return Scaffold(
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {},
+        icon: Icon(MdiIcons.messagePlusOutline),
+        label: Text("Start chat"),
+      ),
       body: RefreshIndicator(
         onRefresh: () async {
           await Future.delayed(Duration(milliseconds: 500));
