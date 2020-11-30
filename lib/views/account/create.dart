@@ -63,7 +63,7 @@ class _CreateAccountViewState extends State<CreateAccountView> {
               ListTile(
                 leading: Icon(MdiIcons.keyStar),
                 onTap: () {
-                  Clipboard.setData(ClipboardData(text: _keyPair.accountId));
+                  Clipboard.setData(ClipboardData(text: _keyPair.secretSeed));
                   HapticFeedback.lightImpact();
                   Scaffold.of(context)
                       .hideCurrentSnackBar(reason: SnackBarClosedReason.remove);
