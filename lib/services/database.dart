@@ -7,10 +7,10 @@ class DatabaseService {
 
   static Future<void> init() async {
     print("Executed init");
-    _database = await openDatabase(join(await getDatabasesPath(), 'database.db'),
-        onCreate: (db, version) {
+    _database = await openDatabase(
+        join(await getDatabasesPath(), 'database.db'), onCreate: (db, version) {
       return db.execute(
-          'CREATE TABLE accounts(accountID TEXT PRIMARY KEY, secretSeed TEXT, customName TEXT)');
+          'CREATE TABLE accounts(accountID TEXT PRIMARY KEY, secretSeed BLOB, customName TEXT)');
     }, version: 1);
     print("DB: ${_database}");
   }
