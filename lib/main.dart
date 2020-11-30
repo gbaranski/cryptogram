@@ -20,8 +20,8 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.dark,
       theme: ThemeData(
           brightness: Brightness.dark,
-          colorScheme: ColorScheme.dark(),
-          scaffoldBackgroundColor: Color(0xFF212121),
+          colorScheme: const ColorScheme.dark(),
+          scaffoldBackgroundColor: Colors.grey.shade900,
           textTheme: GoogleFonts.montserratTextTheme(
               Theme.of(context).primaryTextTheme)),
     );
