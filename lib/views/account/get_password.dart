@@ -7,7 +7,7 @@ class GetPasswordDialog extends StatefulWidget {
 
 class _GetPasswordDialogState extends State<GetPasswordDialog> {
   final _formKey = GlobalKey<FormState>();
-  String _password = "";
+  String _password;
 
   @override
   Widget build(BuildContext context) {
