@@ -1,7 +1,8 @@
+import 'package:cryptogram/models/account.dart';
 import 'package:flutter/material.dart';
 
 class AccountView extends StatelessWidget {
-  static const route = '/account';
+  AccountView(Account account);
 
   @override
   Widget build(BuildContext context) {
