@@ -20,6 +20,7 @@ class _CreateAccountViewState extends State<CreateAccountView> {
 
   Future<void> addAccount(BuildContext context, String customName) async {
     final password = await getUserPassword(context);
+    if (password == null) return;
     final encryptedSecret =
         await Crypto.encryptSecretSeed(_keyPair.secretSeed, password);
     final account = Account(
