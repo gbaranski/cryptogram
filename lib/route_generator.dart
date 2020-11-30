@@ -1,6 +1,7 @@
 import 'package:cryptogram/models/account.dart';
 import 'package:cryptogram/views/account/accounts_list.dart';
 import 'package:cryptogram/views/account/create.dart';
+import 'package:cryptogram/views/chat/new_conversation.dart';
 import 'package:cryptogram/views/error_screen.dart';
 import 'package:cryptogram/views/index.dart';
 
@@ -16,6 +17,8 @@ class RouteGenerator {
               final Account account = settings.arguments;
               if (account == null) return AccountsList();
               return IndexView(account);
+            case NewConversationView.route:
+              return NewConversationView();
             case AccountsList.route:
               return AccountsList();
             case CreateAccountView.route:
