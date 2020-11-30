@@ -13,4 +13,12 @@ abstract class Crypto {
     return secretSeedCipher.encrypt(utf8.encode(secretSeed),
         secretKey: SecretKey(secretKey.bytes), nonce: nonce);
   }
+
+  static Future<String> decryptSecretSeed(
+      Uint8List encryptedSecretSeed, String password) async {
+    final secretKey = await sha256.hash(utf8.encode(password));
+    final decrypted = await secretSeedCipher.decrypt(encryptedSecretSeed,
+        secretKey: SecretKey(secretKey.bytes), nonce: nonce);
+    return utf8.decode(decrypted);
+  }
 }
