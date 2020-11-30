@@ -27,6 +27,17 @@ class _IndexViewState extends State<IndexView> {
     });
   }
 
+  Future<void> onAccountAction(AccountAction action, int index) async {
+    if (action == AccountAction.delete) {
+      final targetAccount = _accounts[index];
+      if (targetAccount == null)
+        throw new Exception(
+            'Exception while removing account: Cannot find account');
+      await DatabaseService.deleteAccount(targetAccount);
+      await loadAccounts();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -40,6 +51,7 @@ class _IndexViewState extends State<IndexView> {
           onTap: () {},
           leading: Icon(MdiIcons.accountKey),
           trailing: PopupMenuButton<AccountAction>(
+            onSelected: (action) => onAccountAction(action, i),
             icon: Icon(Icons.more_vert),
             itemBuilder: (context) => [
               PopupMenuItem(
