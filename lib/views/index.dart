@@ -19,12 +19,18 @@ class IndexView extends StatefulWidget {
 class _IndexViewState extends State<IndexView> {
   List<Account> _accounts; // to be implemented
 
+  Future<void> loadAccounts() async {
+    final accounts = await DatabaseService.getAccounts();
+    print("Loaded accounts, count: ${accounts.length}");
+    setState(() {
+      _accounts = accounts;
+    });
+  }
+
   @override
   void initState() {
-    DatabaseService.getAccounts().then((accounts) {
-      setState(() => _accounts = accounts);
-    });
     super.initState();
+    loadAccounts();
   }
 
   Widget accountsList(BuildContext context) => SliverList(
@@ -66,27 +72,36 @@ class _IndexViewState extends State<IndexView> {
         );
       }, childCount: _accounts.length));
 
+  Future<void> navigateToCreateAccount() async {
+    final result = await Navigator.pushNamed(context, CreateAccountView.route)
+        as CreateAccountResult;
+    if (result != null && result.ok) loadAccounts();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.pushNamed(context, CreateAccountView.route),
+        onPressed: navigateToCreateAccount,
         child: Icon(MdiIcons.accountPlus),
       ),
-      body: CustomScrollView(
-        physics:
-            AlwaysScrollableScrollPhysics().applyTo(BouncingScrollPhysics()),
-        slivers: [
-          SliverAppBar(
-            title: Text("Pick account"),
-          ),
-          if (_accounts != null)
-            accountsList(context)
-          else
-            (SliverToBoxAdapter(
-              child: CircularProgressIndicator(),
-            ))
-        ],
+      body: RefreshIndicator(
+        onRefresh: loadAccounts,
+        child: CustomScrollView(
+          physics:
+              AlwaysScrollableScrollPhysics().applyTo(BouncingScrollPhysics()),
+          slivers: [
+            SliverAppBar(
+              title: Text("Pick account"),
+            ),
+            if (_accounts != null)
+              accountsList(context)
+            else
+              (SliverToBoxAdapter(
+                child: CircularProgressIndicator(),
+              ))
+          ],
+        ),
       ),
     );
   }

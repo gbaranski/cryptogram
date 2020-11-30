@@ -8,6 +8,11 @@ import 'package:flutter/services.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:stellar_flutter_sdk/stellar_flutter_sdk.dart' hide Row, Account;
 
+class CreateAccountResult {
+  final bool ok;
+  CreateAccountResult({@required this.ok});
+}
+
 class CreateAccountView extends StatefulWidget {
   static const String route = '/account/create';
 
@@ -28,7 +33,8 @@ class _CreateAccountViewState extends State<CreateAccountView> {
         customName: customName,
         secretSeed: encryptedSecret);
 
-    DatabaseService.addAccount(account);
+    await DatabaseService.addAccount(account);
+    Navigator.pop<CreateAccountResult>(context, CreateAccountResult(ok: true));
   }
 
   @override
