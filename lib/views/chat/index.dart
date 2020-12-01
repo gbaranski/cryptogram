@@ -1,9 +1,9 @@
 import 'package:cryptogram/models/account.dart';
+import 'package:cryptogram/services/blockchain.dart';
 import 'package:cryptogram/views/account/accounts_list.dart';
 import 'package:cryptogram/views/chat/new_conversation.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:stellar_flutter_sdk/stellar_flutter_sdk.dart' hide Account;
 
 enum MiscAction {
   switch_account,
@@ -18,7 +18,7 @@ class ChatView extends StatefulWidget {
 }
 
 class _ChatViewState extends State<ChatView> {
-  AccountResponse accountData;
+  List<String> _conversations = [];
 
   void onMiscAction(BuildContext context, MiscAction action) {
     if (action == MiscAction.switch_account) {
@@ -26,9 +26,19 @@ class _ChatViewState extends State<ChatView> {
     }
   }
 
+  void listenToPayments() {
+    Blockchain.paymentsStream(widget.account).listen((op) {
+      if (!_conversations.contains(op.sourceAccount))
+        setState(() {
+          _conversations.add(op.sourceAccount);
+        });
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+    listenToPayments();
   }
 
   @override
@@ -76,6 +86,19 @@ class _ChatViewState extends State<ChatView> {
                     ),
                   ),
                 )),
+            SliverList(
+              delegate: SliverChildBuilderDelegate((context, i) {
+                final conversation = _conversations[i];
+                return ListTile(
+                  onTap: () {},
+                  leading: Icon(Icons.person),
+                  title: Text(
+                    conversation,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                );
+              }, childCount: _conversations.length),
+            ),
           ],
         ),
       ),

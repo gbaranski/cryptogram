@@ -38,4 +38,8 @@ abstract class Blockchain {
 
     return _sdk.submitTransaction(transaction);
   }
+
+  static Stream<OperationResponse> paymentsStream(Account account) {
+    return _sdk.payments.forAccount(account.accountID).stream();
+  }
 }
