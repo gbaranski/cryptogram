@@ -1,0 +1,29 @@
+{
+  "name": "cryptogram-cli",
+  "version": "1.0.0",
+  "description": "CLI version of cryptogram app",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "ts-node -r dotenv/config -r tsconfig-paths/register .",
+    "start:dev": "ts-node-dev -r dotenv/config -r tsconfig-paths/register ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gbaranski/cryptogram.git"
+  },
+  "author": "gbaranski",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gbaranski/cryptogram/issues"
+  },
+  "homepage": "https://github.com/gbaranski/cryptogram#readme",
+  "devDependencies": {
+    "dotenv": "^8.2.0",
+    "typescript": "^4.1.2"
+  },
+  "dependencies": {
+    "ts-node": "^9.0.0",
+    "ts-node-dev": "^1.0.0"
+  }
+}
