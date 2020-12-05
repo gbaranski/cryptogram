@@ -730,6 +730,8 @@ github.com/libp2p/go-yamux v1.3.3/go.mod h1:FGTiPvoV/3DVdgWpX+tM0OW3tsM+W5bSE3gZ
 github.com/libp2p/go-yamux v1.3.5/go.mod h1:FGTiPvoV/3DVdgWpX+tM0OW3tsM+W5bSE3gZwqQTcow=
 github.com/libp2p/go-yamux v1.3.7 h1:v40A1eSPJDIZwz2AvrV3cxpTZEGDP11QJbukmEhYyQI=
 github.com/libp2p/go-yamux v1.3.7/go.mod h1:fr7aVgmdNGJK+N1g+b6DW6VxzbRCjCOejR/hkmpooHE=
+github.com/lithammer/fuzzysearch v1.1.1 h1:8F9OAV2xPuYblToVohjanztdnPjbtA0MLgMvDKQ0Z08=
+github.com/lithammer/fuzzysearch v1.1.1/go.mod h1:H2bng+w5gsR7NlfIJM8ElGZI0sX6C/9uzGqicVXGU6c=
 github.com/lucas-clemente/quic-go v0.18.0 h1:JhQDdqxdwdmGdKsKgXi1+coHRoGhvU6z0rNzOJqZ/4o=
 github.com/lucas-clemente/quic-go v0.18.0/go.mod h1:yXttHsSNxQi8AWijC/vLP+OJczXqzHSOcJrM5ITUlCg=
 github.com/lunixbochs/vtclean v1.0.0/go.mod h1:pHhQNgMf3btfWnGBVipUOjRYhoOsdGqdm/+2c2E2WMI=
