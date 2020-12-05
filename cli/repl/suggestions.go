@@ -24,6 +24,14 @@ var (
 			Text:        "exit",
 			Description: "Exit the repl",
 		},
+		{
+			Text:        "id",
+			Description: "Print current node ID",
+		},
+		{
+			Text:        "subscriptions",
+			Description: "View active subscription",
+		},
 	}
 
 	topicSuggestions = []prompt.Suggest{
