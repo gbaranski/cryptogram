@@ -17,6 +17,10 @@ var (
 			Description: "Show available commands",
 		},
 		{
+			Text:        "peers",
+			Description: "Show connected peers with PubSub",
+		},
+		{
 			Text:        "exit",
 			Description: "Exit the repl",
 		},
