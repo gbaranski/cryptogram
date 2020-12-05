@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 
 	config "github.com/ipfs/go-ipfs-config"
-	icore "github.com/ipfs/interface-go-ipfs-core"
 
 	"github.com/ipfs/go-ipfs/core"
 	"github.com/ipfs/go-ipfs/core/coreapi"
@@ -37,8 +36,8 @@ func createTempRepo(ctx context.Context) (string, error) {
 	return repoPath, nil
 }
 
-// Creates an IPFS node and returns its coreAPI
-func createNode(ctx context.Context, repoPath string) (icore.CoreAPI, error) {
+// Creates an IPFS node and returns its coreAPI and Node
+func createNode(ctx context.Context, repoPath string) (*IPFSNodeAPI, error) {
 	// Open the repo
 	repo, err := fsrepo.Open(repoPath)
 	if err != nil {
@@ -63,7 +62,15 @@ func createNode(ctx context.Context, repoPath string) (icore.CoreAPI, error) {
 	}
 
 	// Attach the Core API to the constructed node
-	return coreapi.NewCoreAPI(node)
+	api, err := coreapi.NewCoreAPI(node)
+	if err != nil {
+		return nil, err
+	}
+	return &IPFSNodeAPI{
+		API:  api,
+		Node: node,
+	}, nil
+
 }
 
 func setupPlugins(externalPluginsPath string) error {
@@ -86,7 +93,7 @@ func setupPlugins(externalPluginsPath string) error {
 }
 
 // SpawnEphemeral spawns a node to be used just for this run (i.e. creates a tmp repo)
-func SpawnEphemeral(ctx context.Context) (icore.CoreAPI, error) {
+func SpawnEphemeral(ctx context.Context) (*IPFSNodeAPI, error) {
 	if err := setupPlugins(""); err != nil {
 		return nil, err
 	}
@@ -96,7 +103,6 @@ func SpawnEphemeral(ctx context.Context) (icore.CoreAPI, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to create temp repo: %s", err)
 	}
-
 	// Spawning an ephemeral IPFS node
 	return createNode(ctx, repoPath)
 }

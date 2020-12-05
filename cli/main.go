@@ -22,7 +22,7 @@ func main() {
 	}
 	fmt.Println("IPFS node is running")
 
-	p := prompt.New(func(str string) { repl.Executor(str, ipfs) }, repl.Completer, prompt.OptionTitle("cryptogram-cli"), prompt.OptionPrefix(">>> "))
+	p := prompt.New(func(str string) { repl.Executor(str, *ipfs) }, repl.Completer, prompt.OptionTitle("cryptogram-cli"), prompt.OptionPrefix(">>> "))
 	p.Run()
 
 }
