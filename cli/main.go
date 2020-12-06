@@ -40,7 +40,6 @@ func main() {
 		"/ip4/138.201.68.74/udp/4001/quic/p2p/QmdnXwLrC8p1ueiq2Qya8joNvk3TVVDAut7PrikmZwubtR",
 		"/ip4/94.130.135.167/tcp/4001/p2p/QmUEMvxS2e7iDrereVYc5SWPauXPyNwxcy9BXZrC1QTcHE",
 		"/ip4/94.130.135.167/udp/4001/quic/p2p/QmUEMvxS2e7iDrereVYc5SWPauXPyNwxcy9BXZrC1QTcHE",
-		"/ip4/127.0.0.1/tcp/4001/p2p/12D3KooWLt4Sbbg1Nn5ZccwiVDUFuHZGz6frmLkc3WbBxj9QbMfo",
 
 		// You can add more nodes here, for example, another IPFS node you might have running locally, mine was:
 		// "/ip4/127.0.0.1/tcp/4010/p2p/QmZp2fhDLxjYue2RiUvLwT9MWdnbDxam32qYFnGmxZDh5L",
