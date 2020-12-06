@@ -32,6 +32,10 @@ var (
 			Text:        "subscriptions",
 			Description: "View active subscription",
 		},
+		{
+			Text:        "listen",
+			Description: "Listen to incoming messagesw",
+		},
 	}
 
 	topicSuggestions = []prompt.Suggest{
