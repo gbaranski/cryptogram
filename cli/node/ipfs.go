@@ -30,9 +30,24 @@ func SendMessage(ipfs IPFSNodeAPI, topic string, msg string) {
 
 // SubscribeMessages subscribes to messages over PubSub
 func SubscribeMessages(ipfs IPFSNodeAPI, receiverID string) iface.PubSubSubscription {
-	subscription, err := ipfs.API.PubSub().Subscribe(context.TODO(), receiverID+"/messages")
+	subscription, err := ipfs.API.PubSub().Subscribe(context.TODO(), receiverID)
 	if err != nil {
 		fmt.Printf("Error occured when subscribing %s\n", err)
 	}
 	return subscription
+}
+
+// ListenToMessages listens to messages
+func ListenToMessages(sub iface.PubSubSubscription) {
+	message, err := sub.Next(context.Background())
+	if err != nil {
+		fmt.Printf("Error occured when printing messages %s", err)
+	}
+
+	fmt.Printf("\nNew message:\nFrom: %s\nContent: %s\nTopics: \n", message.From().String(), string(message.Data()))
+	for i, v := range message.Topics() {
+		fmt.Printf("%d %s\n", i, v)
+
+	}
+	ListenToMessages(sub)
 }
