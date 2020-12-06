@@ -65,15 +65,8 @@ func Executor(fullCMD string, ipfs node.IPFSNodeAPI) {
 		default:
 			fmt.Printf("Unhandled command \"%s\"\n", args[0])
 		}
-	case "messages":
-		fmt.Println("Started printing messages")
-		message, err := subscription.Next(context.Background())
-		fmt.Println("Here")
-		if err != nil {
-			fmt.Printf("Error occured when printing messages %s", err)
-		}
-
-		fmt.Printf("Messages: %s", string(message.Data()))
+	case "listen":
+		go node.ListenToMessages(subscription)
 	default:
 		fmt.Printf("Unhandled command \"%s\"\n", args[0])
 	}
