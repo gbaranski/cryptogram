@@ -8,8 +8,25 @@
     "start": "next start"
   },
   "dependencies": {
+    "@types/multiaddr": "^7.2.0",
+    "libp2p": "^0.29.3",
+    "libp2p-bootstrap": "^0.12.1",
+    "libp2p-gossipsub": "^0.7.0",
+    "libp2p-kad-dht": "^0.20.2",
+    "libp2p-mplex": "^0.10.1",
+    "libp2p-noise": "^2.0.1",
+    "libp2p-webrtc-star": "^0.20.2",
+    "libp2p-websockets": "^0.14.0",
+    "multiaddr": "^8.1.1",
     "next": "10.0.3",
+    "peer-id": "^0.14.2",
     "react": "17.0.1",
     "react-dom": "17.0.1"
+  },
+  "devDependencies": {
+    "@polkadot/ts": "^0.3.57",
+    "@types/node": "^14.14.10",
+    "@types/react": "^17.0.0",
+    "typescript": "^4.1.2"
   }
 }
