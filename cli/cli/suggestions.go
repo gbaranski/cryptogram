@@ -1,4 +1,4 @@
-package repl
+package cli
 
 import "github.com/c-bata/go-prompt"
 
