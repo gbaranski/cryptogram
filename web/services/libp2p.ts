@@ -1,4 +1,4 @@
-import Libp2p from "libp2p";
+import Libp2p, { Options } from "libp2p";
 import Websockets from "libp2p-websockets";
 import WebrtcStar from "libp2p-webrtc-star";
 import Mplex from "libp2p-mplex";
@@ -7,23 +7,10 @@ import Bootstrap from "libp2p-bootstrap";
 import KadDHT from "libp2p-kad-dht";
 import Gossipsub from "libp2p-gossipsub";
 
-// import "@polkadot/ts/libp2p";
-// import "@polkadot/ts/libp2p-bootstrap";
-// import "@polkadot/ts/libp2p-crypto";
-// import "@polkadot/ts/libp2p-kad-dht";
-// import "@polkadot/ts/libp2p-mdns";
-// import "@polkadot/ts/libp2p-mplex";
-// import "@polkadot/ts/libp2p-secio";
-// import "@polkadot/ts/libp2p-spdy";
-// import "@polkadot/ts/libp2p-tcp";
-// import "@polkadot/ts/libp2p-webrtc-direct";
-// import "@polkadot/ts/libp2p-webrtc-star";
-// import "@polkadot/ts/libp2p-websocket-star";
-// import "@polkadot/ts/libp2p-websockets";
 import PeerId from "peer-id";
 
 export const startNode = async (peerID: PeerId): Promise<Libp2p> => {
-  const options: LibP2p.Options = {
+  const options: Options = {
     peerId: peerID,
     addresses: {
       listen: [
@@ -34,7 +21,6 @@ export const startNode = async (peerID: PeerId): Promise<Libp2p> => {
     modules: {
       transport: [Websockets, WebrtcStar],
       streamMuxer: [Mplex],
-      // @ts-ignore
       connEncryption: [NOISE],
       peerDiscovery: [Bootstrap],
       dht: KadDHT,
@@ -49,7 +35,6 @@ export const startNode = async (peerID: PeerId): Promise<Libp2p> => {
         },
       },
       dht: {
-        // @ts-ignore
         enabled: true,
         randomWalk: {
           enabled: true,
@@ -58,7 +43,6 @@ export const startNode = async (peerID: PeerId): Promise<Libp2p> => {
     },
   };
 
-  // @ts-ignore
   const libp2p: Libp2p = await Libp2p.create(options);
   await libp2p.start();
   return libp2p;
