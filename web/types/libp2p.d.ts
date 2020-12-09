@@ -1,3 +1,6 @@
+type Connection = import("libp2p-gossipsub/src/interfaces").Connection;
+type PeerId = import("peer-id");
+
 declare module "libp2p" {
   export default class Libp2p {
     constructor(options: Options);
@@ -6,6 +9,9 @@ declare module "libp2p" {
      * instance if one is not provided in options.
      */
     static create(options: Options): Promise<Libp2p>;
+
+    on(event: "error", callback: (err: Error) => any);
+    on(event: "peer:discovery", callack: (peerId: PeerId) => any);
 
     /**
      * Load keychain keys from the datastore, importing the private key as 'self', if needed.
@@ -317,6 +323,16 @@ declare module "libp2p" {
       ): Promise<{ id: PeerId; multiaddrs: MultiAddr[] }>;
     };
     peerStore: {
+      on(event: "peer", callback: (peerId: PeerId) => any);
+      on(
+        event: "change:multiaddrs",
+        callback: (event: { peerId: PeerId; mutliaddrs: Multiaddr[] }) => any
+      );
+      on(
+        event: "change:protocols",
+        callback: (e: { peerId: PeerId; protocols: string[] }) => any
+      );
+
       /**
          * Get all the stored information of every peer.
          * @see https://github.com/libp2p/js-libp2p/blob/master/doc/API.md#peerstorepeers
@@ -659,6 +675,9 @@ declare module "libp2p" {
 
          */
       size: number;
+
+      on(event: "peer:connect", callback: (connection: Connection) => any);
+      on(event: "peer:disconnect", callback: (connection: Connection) => any);
     };
     keychain: {
       /**
