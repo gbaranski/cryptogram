@@ -26,7 +26,7 @@ func main() {
 	log.Println("LibP2P host started")
 	log.Println("Addresses: ")
 	for i, addr := range host.Addrs() {
-		log.Println(i, " - ", addr)
+		log.Printf("%d - %s/p2p/%s", i, addr, host.ID())
 	}
 	_, err = dht.New(ctx, host)
 	select {}
