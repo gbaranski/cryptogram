@@ -5,37 +5,55 @@ import (
 	"log"
 	"time"
 
+	"github.com/c-bata/go-prompt"
+	"github.com/gbaranski/cryptogram/cli/cli"
 	"github.com/gbaranski/cryptogram/cli/misc"
-	dht "github.com/libp2p/go-libp2p-kad-dht"
+	"github.com/multiformats/go-multiaddr"
 
 	node "github.com/gbaranski/cryptogram/cli/node"
 )
 
 func main() {
+
+	var bootstrapPeers []multiaddr.Multiaddr
+
+	for _, s := range []string{
+		"/ip4/192.168.1.100/tcp/4001/p2p/QmNaRGMqFkSNEra3SQRFGQBZmHRmhCTq1ytuNsjkYqAGpQ",
+	} {
+		ma, err := multiaddr.NewMultiaddr(s)
+		if err != nil {
+			panic(err)
+		}
+		bootstrapPeers = append(bootstrapPeers, ma)
+	}
+
 	config := &misc.Config{
 		RendezvousString: "cryptogram-rendezvous",
-		BootstrapPeers:   dht.DefaultBootstrapPeers,
 		ListenAddresses:  nil,
 		ProtocolID:       "/chat/1.0.0",
-		MDNSDiscovery: misc.MDNSDiscoveryConfig{
-			Enabled:  true,
-			Interval: time.Second * 5,
+		MDNSDiscovery: &misc.MDNSDiscoveryConfig{
+			Enabled:  false,
+			Interval: time.Minute * 15,
 		},
-		DHTDiscovery: misc.DHTDiscoveryConfig{
-			Enabled: false,
+		DHTDiscovery: &misc.DHTDiscoveryConfig{
+			BootstrapPeers: &bootstrapPeers,
+			Enabled:        true,
 		},
 	}
 
 	log.Println("-- Getting an LibP2P host running -- ")
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	_, err := node.CreateHost(&ctx, config)
+	api, err := node.CreateAPI(&ctx, config)
 	if err != nil {
 		log.Panicf("Failed creating host: %s\n", err)
 	}
 
-	// p := prompt.New(func(str string) { repl.Executor(str, *ipfs) }, repl.Completer, prompt.OptionTitle("cryptogram-cli"), prompt.OptionPrefix(">>> "))
-	// p.Run()
-	select {}
+	p := prompt.New(
+		func(str string) { cli.Executor(str, api) },
+		cli.Completer,
+		prompt.OptionTitle("cryptogram-cli"),
+		prompt.OptionPrefix(">>> "))
+	p.Run()
 
 }

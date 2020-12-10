@@ -19,7 +19,7 @@ func connectBootstrapNodes(ctx *context.Context, host *host.Host, config *misc.C
 	// Let's connect to the bootstrap nodes first. They will tell us about the
 	// other nodes in the network.
 	var wg sync.WaitGroup
-	for _, peerAddr := range config.BootstrapPeers {
+	for _, peerAddr := range *config.DHTDiscovery.BootstrapPeers {
 		peerinfo, _ := peer.AddrInfoFromP2pAddr(peerAddr)
 		wg.Add(1)
 		go func() {

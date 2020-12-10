@@ -2,6 +2,7 @@ package discovery
 
 import (
 	"context"
+	"log"
 
 	misc "github.com/gbaranski/cryptogram/cli/misc"
 	"github.com/libp2p/go-libp2p-core/host"
@@ -10,11 +11,19 @@ import (
 )
 
 type discoveryNotifee struct {
+	Host     *host.Host
 	PeerChan chan peer.AddrInfo
 }
 
 // interface to be called when new  peer is found
 func (n *discoveryNotifee) HandlePeerFound(pi peer.AddrInfo) {
+	log.Println("MDNS Peer found: ", pi.ID)
+	err := (*(n.Host)).Connect(context.Background(), pi)
+	if err != nil {
+		log.Panicln("Error when connecting to MDNS peer", err)
+		return
+	}
+	log.Println("Connected to: ", pi.ID)
 	n.PeerChan <- pi
 }
 
@@ -25,7 +34,7 @@ func SetupMDNSDiscovery(ctx *context.Context, host *host.Host, config *misc.Conf
 	if err != nil {
 		return nil, err
 	}
-	n := &discoveryNotifee{PeerChan: make(chan peer.AddrInfo)}
+	n := &discoveryNotifee{PeerChan: make(chan peer.AddrInfo), Host: host}
 	disc.RegisterNotifee(n)
 	return n.PeerChan, nil
 }
