@@ -33,10 +33,9 @@ func findSuggestions(str string, availableSuggestions []prompt.Suggest) []prompt
 
 // Completer adds completer feature
 func Completer(d prompt.Document) []prompt.Suggest {
-	cmdText := strings.Trim(d.Text, " ")
-	if strings.HasPrefix(cmdText, "topic") {
-		cmdText := strings.Trim(strings.TrimPrefix(cmdText, "topic"), " ")
-		return findSuggestions(cmdText, topicSuggestions)
+	s := strings.Trim(d.Text, " ")
+	if strings.HasPrefix(s, "/") == false {
+		return nil
 	}
-	return findSuggestions(cmdText, commandSuggestions)
+	return findSuggestions(strings.TrimPrefix(s, "/"), commandSuggestions)
 }

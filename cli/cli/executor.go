@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"context"
 	"fmt"
 	"os"
 	"strings"
@@ -23,9 +22,8 @@ func validateArgs(args []string, max int, min int) bool {
 
 var subscription iface.PubSubSubscription
 
-// Executor used to execute commands in CLI
-func Executor(fullCMD string, ipfs node.IPFSNodeAPI) {
-	args := strings.Split(fullCMD, " ")
+func executeCommand(cmd string, api *node.API) {
+	args := strings.Split(cmd, " ")
 
 	switch args[0] {
 	case "":
@@ -34,40 +32,23 @@ func Executor(fullCMD string, ipfs node.IPFSNodeAPI) {
 		fmt.Println("Goodbye")
 		os.Exit(0)
 	case "id":
-		fmt.Printf("Node ID: %s\n", ipfs.Node.Identity.String())
+		fmt.Println((*api.Host).ID())
 	case "peers":
-		peers, err := ipfs.API.PubSub().Peers(context.Background())
-		if err != nil {
-			fmt.Printf("Error occured when retreiving list of peers %s", err)
+		for i, p := range (*api.Host).Network().Peers() {
+			fmt.Println(i, " - ", p)
 		}
-		fmt.Println("Peers: ")
-		for _, v := range peers {
-			fmt.Println(v)
-
-		}
-	case "subscriptions":
-		fmt.Print("Subscriptions: ")
-		fmt.Println(ipfs.API.PubSub().Ls(context.TODO()))
-	case "send_message":
-		if validateArgs(args, 3, 3) == false {
-			return
-		}
-		node.SendMessage(ipfs, args[1], args[2])
-	case "topic":
-		switch args[1] {
-		case "subscribe":
-			if validateArgs(args, 3, 3) == false {
-				return
-			}
-			subscription = node.SubscribeMessages(ipfs, args[2])
-		case "unsubscribe":
-			fmt.Println("Not implemented yet")
-		default:
-			fmt.Printf("Unhandled command \"%s\"\n", args[0])
-		}
-	case "listen":
-		go node.ListenToMessages(subscription)
 	default:
 		fmt.Printf("Unhandled command \"%s\"\n", args[0])
 	}
+
+}
+
+// Executor used to execute commands in CLI
+func Executor(cmd string, api *node.API) {
+	if strings.HasPrefix(cmd, "/") {
+		executeCommand(strings.TrimPrefix(cmd, "/"), api)
+		return
+	}
+
+	fmt.Println("Sending message: ", cmd)
 }
