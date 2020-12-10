@@ -52,6 +52,6 @@ func CreateAPI(ctx *context.Context, config *misc.Config) (*API, error) {
 
 	}
 
-	return &API{Host: &host, PS: ps}, nil
+	return &API{Host: &host, PubSub: ps}, nil
 
 }

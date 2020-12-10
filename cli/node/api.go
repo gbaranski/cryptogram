@@ -7,6 +7,6 @@ import (
 
 // API used for holding current node state
 type API struct {
-	Host *host.Host
-	PS   *pubsub.PubSub
+	Host   *host.Host
+	PubSub *pubsub.PubSub
 }
