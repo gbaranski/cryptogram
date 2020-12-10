@@ -2,6 +2,7 @@ package misc
 
 import (
 	"strings"
+	"time"
 
 	maddr "github.com/multiformats/go-multiaddr"
 )
@@ -37,6 +38,17 @@ func StringsToAddrs(addrStrings []string) (maddrs []maddr.Multiaddr, err error) 
 	return
 }
 
+// MDNSDiscoveryConfig used for Config
+type MDNSDiscoveryConfig struct {
+	Enabled  bool
+	Interval time.Duration
+}
+
+// DHTDiscoveryConfig used for Config
+type DHTDiscoveryConfig struct {
+	Enabled bool
+}
+
 // Config configuration
 type Config struct {
 	// Unique string to identify group of nodes. Share this with your friends to let them connect with you
@@ -44,4 +56,6 @@ type Config struct {
 	BootstrapPeers   addrList
 	ListenAddresses  addrList
 	ProtocolID       string
+	MDNSDiscovery    MDNSDiscoveryConfig
+	DHTDiscovery     DHTDiscoveryConfig
 }
