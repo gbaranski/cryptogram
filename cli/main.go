@@ -19,7 +19,7 @@ func main() {
 		ProtocolID:       "/chat/1.0.0",
 		MDNSDiscovery: misc.MDNSDiscoveryConfig{
 			Enabled:  true,
-			Interval: time.Hour,
+			Interval: time.Second * 5,
 		},
 		DHTDiscovery: misc.DHTDiscoveryConfig{
 			Enabled: false,
