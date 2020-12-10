@@ -32,12 +32,22 @@ func CreateHost(ctx *context.Context, config *misc.Config) (*host.Host, error) {
 	if config.MDNSDiscovery.Enabled {
 		log.Println("Initializing MDNS Discovery")
 		peerChan, err := discovery.SetupMDNSDiscovery(ctx, &host, config)
+
 		if err != nil {
 			return &host, err
 		}
 		log.Println("Waiting for first peer to connect")
 		peer := <-peerChan
 		log.Println("MDNS Peer connected: ", peer.ID)
+		if err := host.Connect(*ctx, peer); err != nil {
+			return nil, err
+		}
+		stream, err := host.NewStream(*ctx, peer.ID, protocol.ID(config.ProtocolID))
+		if err != nil {
+			return nil, err
+		}
+		misc.HandleNetworkStream(stream)
+
 		return &host, nil
 	}
 
