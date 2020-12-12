@@ -47,7 +47,7 @@ func NewChatUI(cr *node.ChatRoom) *ChatUI {
 	// an input field for typing messages into
 	inputCh := make(chan string, 32)
 	input := tview.NewInputField().
-		SetLabel(*cr.Nick + " > ").
+		SetLabel(*cr.Nickname + " > ").
 		SetFieldWidth(0).
 		SetFieldBackgroundColor(tcell.ColorBlack)
 
@@ -133,15 +133,14 @@ func (ui *ChatUI) refreshPeers() {
 // displayChatMessage writes a ChatMessage from the room to the message window,
 // with the sender's nick highlighted in green.
 func (ui *ChatUI) displayChatMessage(cm *node.ChatMessage) {
-	prompt := withColor("green", fmt.Sprintf("<%s>:", *cm.SenderNick))
+	var color string
+	if *cm.SenderID == ui.cr.PeerID.Pretty() {
+		color = "yellow"
+	} else {
+		color = "green"
+	}
+	prompt := withColor(color, fmt.Sprintf("<%s>:", *cm.SenderNick))
 	fmt.Fprintf(ui.msgW, "%s %s\n", prompt, *cm.Message)
-}
-
-// displaySelfMessage writes a message from ourself to the message window,
-// with our nick highlighted in yellow.
-func (ui *ChatUI) displaySelfMessage(msg string) {
-	prompt := withColor("yellow", fmt.Sprintf("<%s>:", *ui.cr.Nick))
-	fmt.Fprintf(ui.msgW, "%s %s\n", prompt, msg)
 }
 
 // handleEvents runs an event loop that sends user input to the chat room
@@ -159,8 +158,6 @@ func (ui *ChatUI) handleEvents() {
 			if err != nil {
 				log.Panicf("publish error: %s\n", err)
 			}
-			ui.displaySelfMessage(input)
-
 		case m := <-ui.cr.Messages:
 			// when we receive a message from the chat room, print it to the message window
 			ui.displayChatMessage(m)

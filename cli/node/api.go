@@ -39,8 +39,8 @@ type ChatRoom struct {
 	sub     *pubsub.Subscription
 
 	RoomName *string
-	Self     *peer.ID
-	Nick     *string
+	PeerID   *peer.ID
+	Nickname *string
 }
 
 func getTopicName(roomName string) string {
@@ -49,7 +49,7 @@ func getTopicName(roomName string) string {
 
 // JoinChatRoom tries to subscribe to the PubSub topic for the room name, returning
 // a ChatRoom on success.
-func JoinChatRoom(ctx context.Context, pubsub *pubsub.PubSub, selfID peer.ID, nickname *string, roomName *string) (*ChatRoom, error) {
+func JoinChatRoom(ctx context.Context, pubsub *pubsub.PubSub, peerID peer.ID, nickname *string, roomName *string) (*ChatRoom, error) {
 	// join the pubsub topic
 	topic, err := pubsub.Join(getTopicName(*roomName))
 	if err != nil {
@@ -67,8 +67,8 @@ func JoinChatRoom(ctx context.Context, pubsub *pubsub.PubSub, selfID peer.ID, ni
 		pubsub:   pubsub,
 		topic:    topic,
 		sub:      sub,
-		Self:     &selfID,
-		Nick:     nickname,
+		PeerID:   &peerID,
+		Nickname: nickname,
 		RoomName: roomName,
 		Messages: make(chan *ChatMessage, ChatRoomBufSize),
 	}
@@ -81,12 +81,12 @@ func JoinChatRoom(ctx context.Context, pubsub *pubsub.PubSub, selfID peer.ID, ni
 // Publish sends a message to the pubsub topic.
 func (cr *ChatRoom) Publish(message string) error {
 
-	prettySenderID := cr.Self.Pretty()
+	prettySenderID := cr.PeerID.Pretty()
 
 	m := ChatMessage{
 		Message:    &message,
 		SenderID:   &prettySenderID,
-		SenderNick: cr.Nick,
+		SenderNick: cr.Nickname,
 	}
 	msgBytes, err := json.Marshal(m)
 	if err != nil {
@@ -109,7 +109,7 @@ func (cr *ChatRoom) readLoop() {
 			return
 		}
 		// only forward messages delivered by others
-		if &msg.ReceivedFrom == cr.Self {
+		if &msg.ReceivedFrom == cr.PeerID {
 			continue
 		}
 		cm := new(ChatMessage)
