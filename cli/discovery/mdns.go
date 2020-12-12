@@ -22,7 +22,6 @@ func (n *discoveryNotifee) HandlePeerFound(pi peer.AddrInfo) {
 		log.Panicln("Error when connecting to MDNS peer", err)
 		return
 	}
-	log.Println("Connected to: ", pi.ID)
 }
 
 // SetupMDNSDiscovery set ups MDNS Discovery
