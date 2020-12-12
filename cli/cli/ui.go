@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/gbaranski/cryptogram/cli/node"
-	"github.com/gdamore/tcell"
+	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
 
@@ -31,16 +31,15 @@ type ChatUI struct {
 func NewChatUI(cr *node.ChatRoom) *ChatUI {
 	app := tview.NewApplication()
 
-	// make a text view to contain our chat messages
-	msgBox := tview.NewTextView()
-	msgBox.SetDynamicColors(true)
-	msgBox.SetBorder(true)
-	msgBox.SetTitle(fmt.Sprintf("Room: %s", *cr.RoomName))
+	msgView := tview.NewTextView()
+	msgView.SetDynamicColors(true)
+	msgView.SetBorder(true)
+	msgView.SetTitle(fmt.Sprintf("Room: %s", *cr.RoomName))
 
 	// text views are io.Writers, but they don't automatically refresh.
 	// this sets a change handler to force the app to redraw when we get
 	// new messages to display.
-	msgBox.SetChangedFunc(func() {
+	msgView.SetChangedFunc(func() {
 		app.Draw()
 	})
 
@@ -81,7 +80,7 @@ func NewChatUI(cr *node.ChatRoom) *ChatUI {
 	// chatPanel is a horizontal box with messages on the left and peers on the right
 	// the peers list takes 20 columns, and the messages take the remaining space
 	chatPanel := tview.NewFlex().
-		AddItem(msgBox, 0, 1, false).
+		AddItem(msgView, 0, 1, false).
 		AddItem(peersList, 20, 1, false)
 
 	// flex is a vertical box with the chatPanel on top and the input field at the bottom.
@@ -97,7 +96,7 @@ func NewChatUI(cr *node.ChatRoom) *ChatUI {
 		cr:        cr,
 		app:       app,
 		peersList: peersList,
-		msgW:      msgBox,
+		msgW:      msgView,
 		inputCh:   inputCh,
 		doneCh:    make(chan struct{}, 1),
 	}
