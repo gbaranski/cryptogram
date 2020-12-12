@@ -133,13 +133,32 @@ func (ui *ChatUI) refreshPeers() {
 // with the sender's nick highlighted in green.
 func (ui *ChatUI) displayChatMessage(cm *node.ChatMessage) {
 	var color string
-	if *cm.SenderID == ui.cr.PeerID.Pretty() {
+	if cm.SenderID == ui.cr.PeerID.Pretty() {
 		color = "yellow"
 	} else {
 		color = "green"
 	}
-	prompt := withColor(color, fmt.Sprintf("<%s>:", *cm.SenderNick))
-	fmt.Fprintf(ui.msgW, "%s %s\n", prompt, *cm.Message)
+	prompt := withColor(color, fmt.Sprintf("<%s>:", cm.SenderNick))
+	fmt.Fprintf(ui.msgW, "%s %s\n", prompt, cm.Message)
+}
+
+func (ui *ChatUI) handleCommand(command string) {
+	args := strings.Split(command, " ")
+	msg := &node.ChatMessage{
+		SenderID:   "Cryptogram",
+		SenderNick: "Cryptogram",
+	}
+	switch args[0] {
+	case "topic":
+
+	case "help":
+		msg.Message = "List of commands\n/topic <name>"
+	default:
+		msg.Message = "Unknown command, use /help to list commands"
+	}
+
+	ui.cr.Messages <- msg
+
 }
 
 // handleEvents runs an event loop that sends user input to the chat room
@@ -152,6 +171,10 @@ func (ui *ChatUI) handleEvents() {
 	for {
 		select {
 		case input := <-ui.inputCh:
+			if strings.HasPrefix(input, "/") {
+				ui.handleCommand(strings.TrimPrefix(input, "/"))
+				continue
+			}
 			// when the user types in a line, publish it to the chat room and print to the message window
 			err := ui.cr.Publish(input)
 			if err != nil {
