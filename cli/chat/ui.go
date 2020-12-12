@@ -1,4 +1,4 @@
-package cli
+package chat
 
 import (
 	"fmt"
@@ -7,17 +7,16 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gbaranski/cryptogram/cli/node"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
 
-// ChatUI is a Text User Interface (TUI) for a ChatRoom.
+// UI is a Text User Interface (TUI) for a ChatRoom.
 // The Run method will draw the UI to the terminal in "fullscreen"
 // mode. You can quit with Ctrl-C, or by typing "/quit" into the
 // chat prompt.
-type ChatUI struct {
-	cr        *node.ChatRoom
+type UI struct {
+	cr        *Room
 	app       *tview.Application
 	peersList *tview.TextView
 
@@ -26,9 +25,9 @@ type ChatUI struct {
 	doneCh  chan struct{}
 }
 
-// NewChatUI returns a new ChatUI struct that controls the text UI.
+// NewUI returns a new ChatUI struct that controls the text UI.
 // It won't actually do anything until you call Run().
-func NewChatUI(cr *node.ChatRoom) *ChatUI {
+func NewUI(cr *Room) *UI {
 	app := tview.NewApplication()
 
 	msgView := tview.NewTextView()
@@ -92,7 +91,7 @@ func NewChatUI(cr *node.ChatRoom) *ChatUI {
 
 	app.SetRoot(flex, true)
 
-	return &ChatUI{
+	return &UI{
 		cr:        cr,
 		app:       app,
 		peersList: peersList,
@@ -104,7 +103,7 @@ func NewChatUI(cr *node.ChatRoom) *ChatUI {
 
 // Run starts the chat event loop in the background, then starts
 // the event loop for the text UI.
-func (ui *ChatUI) Run() error {
+func (ui *UI) Run() error {
 	go ui.handleEvents()
 	defer ui.end()
 
@@ -112,13 +111,13 @@ func (ui *ChatUI) Run() error {
 }
 
 // end signals the event loop to exit gracefully
-func (ui *ChatUI) end() {
+func (ui *UI) end() {
 	ui.doneCh <- struct{}{}
 }
 
 // refreshPeers pulls the list of peers currently in the chat room and
 // displays the last 8 chars of their peer id in the Peers panel in the ui.
-func (ui *ChatUI) refreshPeers() {
+func (ui *UI) refreshPeers() {
 	peers := ui.cr.ListPeers()
 	idStrs := make([]string, len(peers))
 	for i, p := range peers {
@@ -131,7 +130,7 @@ func (ui *ChatUI) refreshPeers() {
 
 // displayChatMessage writes a ChatMessage from the room to the message window,
 // with the sender's nick highlighted in green.
-func (ui *ChatUI) displayChatMessage(cm *node.ChatMessage) {
+func (ui *UI) displayChatMessage(cm *Message) {
 	var color string
 	if cm.SenderID == ui.cr.PeerID.Pretty() {
 		color = "yellow"
@@ -142,9 +141,9 @@ func (ui *ChatUI) displayChatMessage(cm *node.ChatMessage) {
 	fmt.Fprintf(ui.msgW, "%s %s\n", prompt, cm.Message)
 }
 
-func (ui *ChatUI) handleCommand(command string) {
+func (ui *UI) handleCommand(command string) {
 	args := strings.Split(command, " ")
-	msg := &node.ChatMessage{
+	msg := &Message{
 		SenderID:   "Cryptogram",
 		SenderNick: "Cryptogram",
 	}
@@ -164,7 +163,7 @@ func (ui *ChatUI) handleCommand(command string) {
 // handleEvents runs an event loop that sends user input to the chat room
 // and displays messages received from the chat room. It also periodically
 // refreshes the list of peers in the UI.
-func (ui *ChatUI) handleEvents() {
+func (ui *UI) handleEvents() {
 	peerRefreshTicker := time.NewTicker(time.Second)
 	defer peerRefreshTicker.Stop()
 

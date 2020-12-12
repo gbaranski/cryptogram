@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/gbaranski/cryptogram/cli/cli"
+	"github.com/gbaranski/cryptogram/cli/chat"
 	"github.com/gbaranski/cryptogram/cli/misc"
 	"github.com/multiformats/go-multiaddr"
 
@@ -50,12 +50,12 @@ func main() {
 		log.Panicf("Failed creating host: %s\n", err)
 	}
 
-	cr, err := node.JoinChatRoom(ctx, api.PubSub, (*api.Host).ID(), nick, "general-1")
+	cr, err := chat.JoinRoom(ctx, api.PubSub, (*api.Host).ID(), nick, "general-1")
 	if err != nil {
 		log.Panicln("Error when joining chat room: ", err)
 	}
 
-	ui := cli.NewChatUI(cr)
+	ui := chat.NewUI(cr)
 	if err = ui.Run(); err != nil {
 		log.Fatalf("error running text UI: %s", err)
 	}

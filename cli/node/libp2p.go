@@ -5,12 +5,19 @@ import (
 	"log"
 
 	"github.com/libp2p/go-libp2p"
+	host "github.com/libp2p/go-libp2p-host"
 	pubsub "github.com/libp2p/go-libp2p-pubsub"
 
 	"github.com/gbaranski/cryptogram/cli/discovery"
 	misc "github.com/gbaranski/cryptogram/cli/misc"
 	"github.com/libp2p/go-libp2p-core/protocol"
 )
+
+// API used for holding current node state
+type API struct {
+	Host   *host.Host
+	PubSub *pubsub.PubSub
+}
 
 // CreateAPI creates libp2p API
 func CreateAPI(ctx *context.Context, config *misc.Config) (*API, error) {
