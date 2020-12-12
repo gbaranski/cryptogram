@@ -2,9 +2,8 @@ package main
 
 import (
 	"context"
+	"flag"
 	"log"
-	"math/rand"
-	"strconv"
 	"time"
 
 	"github.com/gbaranski/cryptogram/cli/cli"
@@ -15,6 +14,8 @@ import (
 )
 
 func main() {
+	nick := flag.String("nick", "Anonymous", "Your nickname")
+	flag.Parse()
 
 	var bootstrapPeers []multiaddr.Multiaddr
 	for _, s := range []string{
@@ -48,12 +49,9 @@ func main() {
 	if err != nil {
 		log.Panicf("Failed creating host: %s\n", err)
 	}
-	rand.Seed(time.Now().Unix())
-	nick := strconv.Itoa(rand.Int())
-	log.Println("Nick!", nick)
 	roomName := "hello-world"
 
-	cr, err := node.JoinChatRoom(ctx, api.PubSub, (*api.Host).ID(), &nick, &roomName)
+	cr, err := node.JoinChatRoom(ctx, api.PubSub, (*api.Host).ID(), nick, &roomName)
 	if err != nil {
 		log.Panicln("Error when joining chat room: ", err)
 	}
