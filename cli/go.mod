@@ -6,6 +6,7 @@ require (
 	github.com/btcsuite/btcd v0.21.0-beta // indirect
 	github.com/c-bata/go-prompt v0.2.5
 	github.com/davidlazar/go-crypto v0.0.0-20200604182044-b73af7476f6c // indirect
+	github.com/gdamore/tcell v1.3.0
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/google/go-cmp v0.5.4 // indirect
@@ -37,6 +38,7 @@ require (
 	github.com/onsi/ginkgo v1.14.2 // indirect
 	github.com/onsi/gomega v1.10.4 // indirect
 	github.com/polydawn/refmt v0.0.0-20190809202753-05966cbd336a // indirect
+	github.com/rivo/tview v0.0.0-20200507165325-823f280c5426
 	github.com/smartystreets/assertions v1.2.0 // indirect
 	github.com/smartystreets/goconvey v1.6.4 // indirect
 	github.com/warpfork/go-wish v0.0.0-20200122115046-b9ea61034e4a // indirect

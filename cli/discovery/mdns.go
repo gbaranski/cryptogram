@@ -11,8 +11,7 @@ import (
 )
 
 type discoveryNotifee struct {
-	Host     *host.Host
-	PeerChan chan peer.AddrInfo
+	Host *host.Host
 }
 
 // interface to be called when new  peer is found
@@ -24,17 +23,16 @@ func (n *discoveryNotifee) HandlePeerFound(pi peer.AddrInfo) {
 		return
 	}
 	log.Println("Connected to: ", pi.ID)
-	n.PeerChan <- pi
 }
 
 // SetupMDNSDiscovery set ups MDNS Discovery
-func SetupMDNSDiscovery(ctx *context.Context, host *host.Host, config *misc.Config) (chan peer.AddrInfo, error) {
+func SetupMDNSDiscovery(ctx *context.Context, host *host.Host, config *misc.Config) error {
 	disc, err := discovery.NewMdnsService(*ctx, *host, config.MDNSDiscovery.Interval, config.RendezvousString)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
-	n := &discoveryNotifee{PeerChan: make(chan peer.AddrInfo), Host: host}
+	n := &discoveryNotifee{Host: host}
 	disc.RegisterNotifee(n)
-	return n.PeerChan, nil
+	return nil
 }
