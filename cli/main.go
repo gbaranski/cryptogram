@@ -49,9 +49,8 @@ func main() {
 	if err != nil {
 		log.Panicf("Failed creating host: %s\n", err)
 	}
-	roomName := "hello-world"
 
-	cr, err := node.JoinChatRoom(ctx, api.PubSub, (*api.Host).ID(), nick, &roomName)
+	cr, err := node.JoinChatRoom(ctx, api.PubSub, (*api.Host).ID(), nick, "general-1")
 	if err != nil {
 		log.Panicln("Error when joining chat room: ", err)
 	}

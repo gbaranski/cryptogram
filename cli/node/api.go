@@ -20,9 +20,9 @@ const ChatRoomBufSize = 128
 
 // ChatMessage gets converted to/from JSON and sent in the body of pubsub messages.
 type ChatMessage struct {
-	Message    *string
-	SenderID   *string
-	SenderNick *string
+	Message    string
+	SenderID   string
+	SenderNick string
 }
 
 // ChatRoom represents a subscription to a single PubSub topic. Messages
@@ -43,15 +43,15 @@ type ChatRoom struct {
 	Nickname *string
 }
 
-func getTopicName(roomName string) string {
-	return "cryptogram-room:" + roomName
+func getTopicName(roomName *string) string {
+	return "cryptogram-room:" + *roomName
 }
 
 // JoinChatRoom tries to subscribe to the PubSub topic for the room name, returning
 // a ChatRoom on success.
-func JoinChatRoom(ctx context.Context, pubsub *pubsub.PubSub, peerID peer.ID, nickname *string, roomName *string) (*ChatRoom, error) {
+func JoinChatRoom(ctx context.Context, pubsub *pubsub.PubSub, peerID peer.ID, nickname *string, roomName string) (*ChatRoom, error) {
 	// join the pubsub topic
-	topic, err := pubsub.Join(getTopicName(*roomName))
+	topic, err := pubsub.Join(getTopicName(&roomName))
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +69,7 @@ func JoinChatRoom(ctx context.Context, pubsub *pubsub.PubSub, peerID peer.ID, ni
 		sub:      sub,
 		PeerID:   &peerID,
 		Nickname: nickname,
-		RoomName: roomName,
+		RoomName: &roomName,
 		Messages: make(chan *ChatMessage, ChatRoomBufSize),
 	}
 
@@ -81,12 +81,10 @@ func JoinChatRoom(ctx context.Context, pubsub *pubsub.PubSub, peerID peer.ID, ni
 // Publish sends a message to the pubsub topic.
 func (cr *ChatRoom) Publish(message string) error {
 
-	prettySenderID := cr.PeerID.Pretty()
-
 	m := ChatMessage{
-		Message:    &message,
-		SenderID:   &prettySenderID,
-		SenderNick: cr.Nickname,
+		Message:    message,
+		SenderID:   cr.PeerID.Pretty(),
+		SenderNick: *cr.Nickname,
 	}
 	msgBytes, err := json.Marshal(m)
 	if err != nil {
@@ -97,7 +95,7 @@ func (cr *ChatRoom) Publish(message string) error {
 
 // ListPeers list peers on specific channel
 func (cr *ChatRoom) ListPeers() []peer.ID {
-	return cr.pubsub.ListPeers(getTopicName(*cr.RoomName))
+	return cr.pubsub.ListPeers(getTopicName(cr.RoomName))
 }
 
 // readLoop pulls messages from the pubsub topic and pushes them onto the Messages channel.
