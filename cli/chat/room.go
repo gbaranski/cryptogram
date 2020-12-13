@@ -11,7 +11,6 @@ import (
 // Room is room
 type Room struct {
 	msgChan      chan *Message
-	doneChan     chan struct{}
 	context      *context.Context
 	topic        *pubsub.Topic
 	subscription *pubsub.Subscription
@@ -37,16 +36,18 @@ func CreateRoom(context context.Context, pubsub *pubsub.PubSub, roomName string,
 
 func (room *Room) readLoop(peerID *peer.ID) {
 	for {
+
 		msg, err := room.subscription.Next(*room.context)
 		if err != nil {
-			close(room.msgChan)
-			return
+			select {
+			case <-room.msgChan:
+				return
+			default:
+				close(room.msgChan)
+				return
+			}
 		}
 
-		// only forward messages delivered by others
-		// if msg.ReceivedFrom == *peerID {
-		// 	continue
-		// }
 		cm := new(Message)
 		err = json.Unmarshal(msg.Data, cm)
 		if err != nil {
@@ -64,4 +65,10 @@ func (room *Room) sendMessage(context context.Context, message *Message) error {
 	}
 	err = room.topic.Publish(context, msgBytes)
 	return err
+}
+
+func (room *Room) close() {
+	room.subscription.Cancel()
+	room.topic.Close()
+	close(room.msgChan)
 }

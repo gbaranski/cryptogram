@@ -155,15 +155,13 @@ func (ui *UI) handleCommand(command string) {
 	}
 	switch args[0] {
 	case "join":
+		ui.room.close()
 		room, err := CreateRoom(context.Background(), ui.chat.pubsub, args[1], ui.chat.msgSender.PeerID)
 		if err != nil {
 			log.Panicln("Error when creating new room ", err)
 		}
 		ui.room = room
 		ui.refreshPeers()
-	case "exit":
-		ui.room.doneChan <- struct{}{}
-		ui.room = nil
 	case "help":
 		msg.Text = "List of commands\n/join <room-name>"
 	default:
