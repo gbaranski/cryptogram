@@ -19,7 +19,7 @@ func main() {
 
 	var bootstrapPeers []multiaddr.Multiaddr
 	for _, s := range []string{
-		"/ip4/192.168.1.100/tcp/4001/p2p/QmS4MVeG7LmTjW3NemtPLMsEmDKuTPcsx4Uk9H6EbAhtSV",
+		"/ip4/104.131.131.82/tcp/4001/p2p/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ",
 	} {
 		ma, err := multiaddr.NewMultiaddr(s)
 		if err != nil {
@@ -33,12 +33,12 @@ func main() {
 		ListenAddresses:  nil,
 		ProtocolID:       "/chat/1.0.0",
 		MDNSDiscovery: &misc.MDNSDiscoveryConfig{
-			Enabled:  true,
+			Enabled:  false,
 			Interval: time.Minute * 15,
 		},
 		DHTDiscovery: &misc.DHTDiscoveryConfig{
 			BootstrapPeers: &bootstrapPeers,
-			Enabled:        false,
+			Enabled:        true,
 		},
 	}
 

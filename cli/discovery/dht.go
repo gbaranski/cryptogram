@@ -8,7 +8,6 @@ import (
 	misc "github.com/gbaranski/cryptogram/cli/misc"
 	"github.com/libp2p/go-libp2p-core/host"
 	"github.com/libp2p/go-libp2p-core/peer"
-	"github.com/libp2p/go-libp2p-core/protocol"
 	discovery "github.com/libp2p/go-libp2p-discovery"
 	dht "github.com/libp2p/go-libp2p-kad-dht"
 )
@@ -43,28 +42,16 @@ func findAndConnectPeers(
 	config *misc.Config) {
 	// Now, look for others who have announced
 	// This is like your friend telling you the location to meet you.
-	log.Println("Searching for other peers...")
+	// log.Println("Searching for other peers...")
 	peerChan, err := routingDiscovery.FindPeers(*ctx, config.RendezvousString)
 	if err != nil {
 		panic(err)
 	}
-	for peer := range peerChan {
-		if peer.ID == (*host).ID() {
+	for p := range peerChan {
+		if p.ID == (*host).ID() {
 			continue
 		}
-		log.Println("Found peer:", peer)
-
-		log.Println("Connecting to:", peer)
-		stream, err := (*host).NewStream(*ctx, peer.ID, protocol.ID(config.ProtocolID))
-
-		if err != nil {
-			log.Println("Connection failed:", err)
-			continue
-		} else {
-			misc.HandleNetworkStream(stream)
-		}
-
-		log.Println("Connected to:", peer)
+		go (*host).Connect(context.Background(), p)
 	}
 
 }
@@ -86,16 +73,17 @@ func SetupDHTDiscovery(ctx *context.Context, host *host.Host, config *misc.Confi
 		return nil, nil, err
 	}
 
+	err = connectBootstrapNodes(ctx, host, config)
+	if err != nil {
+		return nil, nil, err
+	}
+
 	// We use a rendezvous point "cryptogram-rendezvous" to announce our location.
 	// This is like telling your friends to meet you at the Eiffel Tower.
 	log.Println("Announcing ourselves...")
 	routingDiscovery := discovery.NewRoutingDiscovery(kademliaDHT)
 	discovery.Advertise(*ctx, routingDiscovery, config.RendezvousString)
 	log.Println("Successfully announced!")
-	err = connectBootstrapNodes(ctx, host, config)
-	if err != nil {
-		return nil, nil, err
-	}
 
 	go findAndConnectPeers(ctx, host, routingDiscovery, config)
 
