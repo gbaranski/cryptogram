@@ -3,6 +3,7 @@ package chat
 import (
 	"context"
 	"encoding/json"
+	"log"
 
 	"github.com/libp2p/go-libp2p-core/peer"
 	pubsub "github.com/libp2p/go-libp2p-pubsub"
@@ -41,6 +42,7 @@ func (room *Room) readLoop(peerID *peer.ID) {
 		if err != nil {
 			select {
 			case <-room.msgChan:
+				log.Panicln("Error when tracking sub", err)
 				return
 			default:
 				close(room.msgChan)
@@ -70,5 +72,4 @@ func (room *Room) sendMessage(context context.Context, message *Message) error {
 func (room *Room) close() {
 	room.subscription.Cancel()
 	room.topic.Close()
-	close(room.msgChan)
 }

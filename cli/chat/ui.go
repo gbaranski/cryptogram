@@ -3,7 +3,6 @@ package chat
 import (
 	"context"
 	"fmt"
-	"io"
 	"log"
 	"strings"
 	"time"
@@ -20,8 +19,8 @@ type UI struct {
 	chat      *Chat
 	room      *Room
 	app       *tview.Application
-	peersList *tview.TextView
-	msgW      io.Writer
+	peersView *tview.TextView
+	msgView   *tview.TextView
 	inputCh   chan string
 	doneCh    chan struct{}
 }
@@ -34,7 +33,6 @@ func NewUI(chat *Chat, room *Room) *UI {
 	msgView := tview.NewTextView()
 	msgView.SetDynamicColors(true)
 	msgView.SetBorder(true)
-	msgView.SetTitle(fmt.Sprintf("Room: %s", room.topic.String()))
 
 	// text views are io.Writers, but they don't automatically refresh.
 	// this sets a change handler to force the app to redraw when we get
@@ -73,15 +71,15 @@ func NewUI(chat *Chat, room *Room) *UI {
 	})
 
 	// make a text view to hold the list of peers in the room, updated by ui.refreshPeers()
-	peersList := tview.NewTextView()
-	peersList.SetBorder(true)
-	peersList.SetTitle("Peers")
+	peersView := tview.NewTextView()
+	peersView.SetBorder(true)
+	peersView.SetTitle("Peers")
 
 	// chatPanel is a horizontal box with messages on the left and peers on the right
 	// the peers list takes 20 columns, and the messages take the remaining space
 	chatPanel := tview.NewFlex().
 		AddItem(msgView, 0, 1, false).
-		AddItem(peersList, 20, 1, false)
+		AddItem(peersView, 20, 1, false)
 
 	// flex is a vertical box with the chatPanel on top and the input field at the bottom.
 
@@ -96,8 +94,8 @@ func NewUI(chat *Chat, room *Room) *UI {
 		chat:      chat,
 		room:      room,
 		app:       app,
-		peersList: peersList,
-		msgW:      msgView,
+		peersView: peersView,
+		msgView:   msgView,
 		inputCh:   inputCh,
 		doneCh:    make(chan struct{}, 1),
 	}
@@ -106,10 +104,15 @@ func NewUI(chat *Chat, room *Room) *UI {
 // Run starts the chat event loop in the background, then starts
 // the event loop for the text UI.
 func (ui *UI) Run() error {
+	ui.updateRoomTitle()
 	go ui.handleEvents()
 	defer ui.end()
 
 	return ui.app.Run()
+}
+
+func (ui *UI) updateRoomTitle() {
+	ui.msgView.SetTitle(fmt.Sprintf("Room: %s", ui.room.topic.String()))
 }
 
 // end signals the event loop to exit gracefully
@@ -126,7 +129,7 @@ func (ui *UI) refreshPeers() {
 		idStrs[i] = p.String()
 	}
 
-	ui.peersList.SetText(strings.Join(idStrs, "\n"))
+	ui.peersView.SetText(strings.Join(idStrs, "\n"))
 	ui.app.Draw()
 }
 
@@ -143,16 +146,15 @@ func (ui *UI) displayChatMessage(cm *Message) {
 		cm.Sender.Nickname = "Unknown"
 	}
 	prompt := withColor(color, fmt.Sprintf("<%s>:", cm.Sender.Nickname))
-	fmt.Fprintf(ui.msgW, "%s %s\n", prompt, cm.Text)
+	fmt.Fprintf(ui.msgView, "%s %s\n", prompt, cm.Text)
+}
+
+func (ui *UI) printSystemMessage(args ...interface{}) {
+	fmt.Fprintln(ui.msgView, args...)
 }
 
 func (ui *UI) handleCommand(command string) {
 	args := strings.Split(command, " ")
-	msg := &Message{
-		Sender: MessageSender{
-			Nickname: "Cryptogram-bot",
-		},
-	}
 	switch args[0] {
 	case "join":
 		ui.room.close()
@@ -162,14 +164,13 @@ func (ui *UI) handleCommand(command string) {
 		}
 		ui.room = room
 		ui.refreshPeers()
+		ui.updateRoomTitle()
+		ui.printSystemMessage("Successfully joined room: ", args[1])
 	case "help":
-		msg.Text = "List of commands\n/join <room-name>"
+		ui.printSystemMessage("Commands\n/join <room-name>")
 	default:
-		msg.Text = "Unknown command, use /help to list commands"
+		ui.printSystemMessage("Unknown command, use /help to list commands")
 	}
-
-	ui.room.msgChan <- msg
-
 }
 
 // handleEvents runs an event loop that sends user input to the chat room
