@@ -150,7 +150,8 @@ func (ui *UI) displayChatMessage(cm *Message) {
 }
 
 func (ui *UI) printSystemMessage(args ...interface{}) {
-	fmt.Fprintln(ui.msgView, args...)
+	prompt := withColor("red", "<System>:")
+	fmt.Fprintln(ui.msgView, prompt, fmt.Sprint(args...))
 }
 
 func (ui *UI) handleCommand(command string) {
