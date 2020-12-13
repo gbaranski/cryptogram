@@ -1,6 +1,7 @@
 package chat
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"log"
@@ -16,24 +17,24 @@ import (
 // mode. You can quit with Ctrl-C, or by typing "/quit" into the
 // chat prompt.
 type UI struct {
-	cr        *Room
+	chat      *Chat
+	room      *Room
 	app       *tview.Application
 	peersList *tview.TextView
-
-	msgW    io.Writer
-	inputCh chan string
-	doneCh  chan struct{}
+	msgW      io.Writer
+	inputCh   chan string
+	doneCh    chan struct{}
 }
 
 // NewUI returns a new ChatUI struct that controls the text UI.
 // It won't actually do anything until you call Run().
-func NewUI(cr *Room) *UI {
+func NewUI(chat *Chat, room *Room) *UI {
 	app := tview.NewApplication()
 
 	msgView := tview.NewTextView()
 	msgView.SetDynamicColors(true)
 	msgView.SetBorder(true)
-	msgView.SetTitle(fmt.Sprintf("Room: %s", *cr.RoomName))
+	msgView.SetTitle(fmt.Sprintf("Room: %s", room.topic.String()))
 
 	// text views are io.Writers, but they don't automatically refresh.
 	// this sets a change handler to force the app to redraw when we get
@@ -45,7 +46,7 @@ func NewUI(cr *Room) *UI {
 	// an input field for typing messages into
 	inputCh := make(chan string, 32)
 	input := tview.NewInputField().
-		SetLabel(*cr.Nickname + " > ").
+		SetLabel(chat.msgSender.Nickname + " > ").
 		SetFieldWidth(0).
 		SetFieldBackgroundColor(tcell.ColorBlack)
 
@@ -92,7 +93,8 @@ func NewUI(cr *Room) *UI {
 	app.SetRoot(flex, true)
 
 	return &UI{
-		cr:        cr,
+		chat:      chat,
+		room:      room,
 		app:       app,
 		peersList: peersList,
 		msgW:      msgView,
@@ -118,7 +120,7 @@ func (ui *UI) end() {
 // refreshPeers pulls the list of peers currently in the chat room and
 // displays the last 8 chars of their peer id in the Peers panel in the ui.
 func (ui *UI) refreshPeers() {
-	peers := ui.cr.ListPeers()
+	peers := ui.room.topic.ListPeers()
 	idStrs := make([]string, len(peers))
 	for i, p := range peers {
 		idStrs[i] = p.String()
@@ -132,31 +134,35 @@ func (ui *UI) refreshPeers() {
 // with the sender's nick highlighted in green.
 func (ui *UI) displayChatMessage(cm *Message) {
 	var color string
-	if cm.SenderID == ui.cr.PeerID.Pretty() {
+	if cm.Sender.PeerID.Pretty() == ui.chat.msgSender.PeerID.Pretty() {
 		color = "yellow"
 	} else {
 		color = "green"
 	}
-	prompt := withColor(color, fmt.Sprintf("<%s>:", cm.SenderNick))
-	fmt.Fprintf(ui.msgW, "%s %s\n", prompt, cm.Message)
+	if len(cm.Sender.Nickname) < 1 {
+		cm.Sender.Nickname = "Unknown"
+	}
+	prompt := withColor(color, fmt.Sprintf("<%s>:", cm.Sender.Nickname))
+	fmt.Fprintf(ui.msgW, "%s %s\n", prompt, cm.Text)
 }
 
 func (ui *UI) handleCommand(command string) {
 	args := strings.Split(command, " ")
 	msg := &Message{
-		SenderID:   "Cryptogram",
-		SenderNick: "Cryptogram",
+		Sender: MessageSender{
+			Nickname: "Cryptogram-bot",
+		},
 	}
 	switch args[0] {
 	case "topic":
 
 	case "help":
-		msg.Message = "List of commands\n/topic <name>"
+		msg.Text = "List of commands\n/topic <name>"
 	default:
-		msg.Message = "Unknown command, use /help to list commands"
+		msg.Text = "Unknown command, use /help to list commands"
 	}
 
-	ui.cr.Messages <- msg
+	ui.room.msgChan <- msg
 
 }
 
@@ -175,11 +181,15 @@ func (ui *UI) handleEvents() {
 				continue
 			}
 			// when the user types in a line, publish it to the chat room and print to the message window
-			err := ui.cr.Publish(input)
+			message := &Message{
+				Text:   input,
+				Sender: *ui.chat.msgSender,
+			}
+			err := ui.room.sendMessage(context.Background(), message)
 			if err != nil {
 				log.Panicf("publish error: %s\n", err)
 			}
-		case m := <-ui.cr.Messages:
+		case m := <-ui.room.msgChan:
 			// when we receive a message from the chat room, print it to the message window
 			ui.displayChatMessage(m)
 
@@ -187,7 +197,7 @@ func (ui *UI) handleEvents() {
 			// refresh the list of peers in the chat room periodically
 			ui.refreshPeers()
 
-		case <-(*ui.cr.Context).Done():
+		case <-(*ui.room.context).Done():
 			return
 
 		case <-ui.doneCh:

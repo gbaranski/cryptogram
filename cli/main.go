@@ -47,17 +47,22 @@ func main() {
 	defer cancel()
 	api, err := node.CreateAPI(&ctx, config)
 	if err != nil {
-		log.Panicf("Failed creating host: %s\n", err)
+		log.Panicln("Failed creating host: ", err)
 	}
 
-	cr, err := chat.JoinRoom(ctx, api.PubSub, (*api.Host).ID(), nick, "general-1")
+	room, err := chat.CreateRoom(ctx, api.PubSub, "general", (*api.Host).ID())
 	if err != nil {
-		log.Panicln("Error when joining chat room: ", err)
+		log.Panicln("Failed creating room ", err)
+	}
+	newChat := chat.CreateChat(ctx, api.PubSub, room, nick, (*api.Host).ID())
+
+	if err != nil {
+		log.Panicln("Error when creating chat: ", err)
 	}
 
-	ui := chat.NewUI(cr)
+	ui := chat.NewUI(newChat, room)
 	if err = ui.Run(); err != nil {
-		log.Fatalf("error running text UI: %s", err)
+		log.Panicln("error running text UI: ", err)
 	}
 
 }
