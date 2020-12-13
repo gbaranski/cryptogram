@@ -50,7 +50,7 @@ func main() {
 		log.Panicln("Failed creating host: ", err)
 	}
 
-	room, err := chat.CreateRoom(ctx, api.PubSub, "general", (*api.Host).ID())
+	room, err := chat.CreateRoom(context.Background(), api.PubSub, "general", (*api.Host).ID())
 	if err != nil {
 		log.Panicln("Failed creating room ", err)
 	}

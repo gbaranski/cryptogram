@@ -154,10 +154,18 @@ func (ui *UI) handleCommand(command string) {
 		},
 	}
 	switch args[0] {
-	case "topic":
-
+	case "join":
+		room, err := CreateRoom(context.Background(), ui.chat.pubsub, args[1], ui.chat.msgSender.PeerID)
+		if err != nil {
+			log.Panicln("Error when creating new room ", err)
+		}
+		ui.room = room
+		ui.refreshPeers()
+	case "exit":
+		ui.room.doneChan <- struct{}{}
+		ui.room = nil
 	case "help":
-		msg.Text = "List of commands\n/topic <name>"
+		msg.Text = "List of commands\n/join <room-name>"
 	default:
 		msg.Text = "Unknown command, use /help to list commands"
 	}
@@ -196,8 +204,8 @@ func (ui *UI) handleEvents() {
 		case <-peerRefreshTicker.C:
 			// refresh the list of peers in the chat room periodically
 			ui.refreshPeers()
-
 		case <-(*ui.room.context).Done():
+			fmt.Println("Context done")
 			return
 
 		case <-ui.doneCh:

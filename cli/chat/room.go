@@ -11,6 +11,7 @@ import (
 // Room is room
 type Room struct {
 	msgChan      chan *Message
+	doneChan     chan struct{}
 	context      *context.Context
 	topic        *pubsub.Topic
 	subscription *pubsub.Subscription
