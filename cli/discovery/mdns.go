@@ -25,7 +25,7 @@ func (n *discoveryNotifee) HandlePeerFound(pi peer.AddrInfo) {
 
 // SetupMDNSDiscovery set ups MDNS Discovery
 func SetupMDNSDiscovery(ctx *context.Context, host *host.Host, config *misc.Config) error {
-	disc, err := discovery.NewMdnsService(*ctx, *host, config.MDNSDiscovery.Interval, config.RendezvousString)
+	disc, err := discovery.NewMdnsService(*ctx, *host, config.MDNSDiscovery.Interval, *config.RendezvousString)
 
 	if err != nil {
 		return err

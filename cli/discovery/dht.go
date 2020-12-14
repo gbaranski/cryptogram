@@ -43,7 +43,7 @@ func findAndConnectPeers(
 	// Now, look for others who have announced
 	// This is like your friend telling you the location to meet you.
 	// log.Println("Searching for other peers...")
-	peerChan, err := routingDiscovery.FindPeers(*ctx, config.RendezvousString)
+	peerChan, err := routingDiscovery.FindPeers(*ctx, *config.RendezvousString)
 	if err != nil {
 		panic(err)
 	}
@@ -82,7 +82,7 @@ func SetupDHTDiscovery(ctx *context.Context, host *host.Host, config *misc.Confi
 	// This is like telling your friends to meet you at the Eiffel Tower.
 	log.Println("Announcing ourselves...")
 	routingDiscovery := discovery.NewRoutingDiscovery(kademliaDHT)
-	discovery.Advertise(*ctx, routingDiscovery, config.RendezvousString)
+	discovery.Advertise(*ctx, routingDiscovery, *config.RendezvousString)
 	log.Println("Successfully announced!")
 
 	go findAndConnectPeers(ctx, host, routingDiscovery, config)
