@@ -33,12 +33,12 @@ func main() {
 		ListenAddresses:  nil,
 		ProtocolID:       "/chat/1.0.0",
 		MDNSDiscovery: &misc.MDNSDiscoveryConfig{
-			Enabled:  false,
+			Enabled:  true,
 			Interval: time.Minute * 15,
 		},
 		DHTDiscovery: &misc.DHTDiscoveryConfig{
 			BootstrapPeers: &bootstrapPeers,
-			Enabled:        true,
+			Enabled:        false,
 		},
 	}
 

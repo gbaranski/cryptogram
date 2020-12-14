@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gdamore/tcell/v2"
+	pubsub "github.com/libp2p/go-libp2p-pubsub"
 	"github.com/rivo/tview"
 )
 
@@ -149,6 +150,15 @@ func (ui *UI) displayChatMessage(cm *Message) {
 	fmt.Fprintf(ui.msgView, "%s %s\n", prompt, cm.Text)
 }
 
+func (ui *UI) displayPeerEvent(e *pubsub.PeerEvent) {
+	switch e.Type {
+	case pubsub.PeerJoin:
+		ui.printSystemMessage(fmt.Sprintf("%s joined", e.Peer.Pretty()))
+	case pubsub.PeerLeave:
+		ui.printSystemMessage(fmt.Sprintf("%s left", e.Peer.Pretty()))
+	}
+}
+
 func (ui *UI) printSystemMessage(args ...interface{}) {
 	prompt := withColor("red", "<System>:")
 	fmt.Fprintln(ui.msgView, prompt, fmt.Sprint(args...))
@@ -197,10 +207,11 @@ func (ui *UI) handleEvents() {
 			if err != nil {
 				log.Panicf("publish error: %s\n", err)
 			}
-		case m := <-ui.room.msgChan:
+		case m := <-ui.room.msgCh:
 			// when we receive a message from the chat room, print it to the message window
 			ui.displayChatMessage(m)
-
+		case e := <-ui.room.peerEventCh:
+			ui.displayPeerEvent(e)
 		case <-peerRefreshTicker.C:
 			// refresh the list of peers in the chat room periodically
 			ui.refreshPeers()
