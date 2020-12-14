@@ -13,9 +13,10 @@ import (
 type Room struct {
 	msgCh       chan *Message
 	peerEventCh chan *pubsub.PeerEvent
-	closeCh     chan struct{}
 	context     *context.Context
 	topic       *pubsub.Topic
+	sub         *pubsub.Subscription
+	teh         *pubsub.TopicEventHandler
 }
 
 // CreateRoom creates Room for desired RoomName
@@ -28,49 +29,39 @@ func CreateRoom(context context.Context, ps *pubsub.PubSub, roomName string, pee
 	if err != nil {
 		return nil, err
 	}
-	eh, err := topic.EventHandler()
+	teh, err := topic.EventHandler()
 	if err != nil {
 		return nil, err
 	}
-	closeCh := make(chan struct{}, 1)
 	room := &Room{
 		msgCh:       make(chan *Message, RoomBufSize),
 		peerEventCh: make(chan (*pubsub.PeerEvent)),
-		closeCh:     closeCh,
 		context:     &context,
 		topic:       topic,
+		sub:         subscription,
+		teh:         teh,
 	}
-	go room.readMessagesLoop(&peerID, subscription)
-	go room.readEventsLoop(eh)
-	go func() {
-		select {
-		case <-closeCh:
-			eh.Cancel()
-			subscription.Cancel()
-			closeCh <- struct{}{}
-			// close(room.msgCh)
-			// close(room.peerEventCh)
-			return
-		}
-	}()
+	go room.readMessagesLoop(&peerID)
+	go room.readPeerEventsLoop()
 	return room, nil
 }
 
-func (room *Room) readEventsLoop(eh *pubsub.TopicEventHandler) {
+func (room *Room) readPeerEventsLoop() {
 	for {
-		e, err := eh.NextPeerEvent(*room.context)
-		fmt.Println("Next peer event")
+		e, err := room.teh.NextPeerEvent(*room.context)
 		if err != nil {
+			fmt.Println("Error occured readPeerEventsLoop", err)
 			return
 		}
 		room.peerEventCh <- &e
 	}
 }
 
-func (room *Room) readMessagesLoop(peerID *peer.ID, sub *pubsub.Subscription) {
+func (room *Room) readMessagesLoop(peerID *peer.ID) {
 	for {
-		msg, err := sub.Next(*room.context)
+		msg, err := room.sub.Next(*room.context)
 		if err != nil {
+			// fmt.Println("Error occured readMessagesLoop", err)
 			return
 		}
 		cm := new(Message)
@@ -93,7 +84,7 @@ func (room *Room) sendMessage(context context.Context, message *Message) error {
 }
 
 func (room *Room) close() error {
-	room.closeCh <- struct{}{}
-	<-room.closeCh
+	room.sub.Cancel()
+	room.teh.Cancel()
 	return room.topic.Close()
 }
