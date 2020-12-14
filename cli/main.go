@@ -8,7 +8,7 @@ import (
 
 	"github.com/gbaranski/cryptogram/cli/chat"
 	"github.com/gbaranski/cryptogram/cli/misc"
-	"github.com/multiformats/go-multiaddr"
+	dht "github.com/libp2p/go-libp2p-kad-dht"
 
 	node "github.com/gbaranski/cryptogram/cli/node"
 )
@@ -16,17 +16,6 @@ import (
 func main() {
 	nick := flag.String("nick", "Anonymous", "Your nickname")
 	flag.Parse()
-
-	var bootstrapPeers []multiaddr.Multiaddr
-	for _, s := range []string{
-		"/ip4/104.131.131.82/tcp/4001/p2p/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ",
-	} {
-		ma, err := multiaddr.NewMultiaddr(s)
-		if err != nil {
-			panic(err)
-		}
-		bootstrapPeers = append(bootstrapPeers, ma)
-	}
 
 	config := &misc.Config{
 		RendezvousString: "cryptogram-rendezvous",
@@ -37,7 +26,7 @@ func main() {
 			Interval: time.Minute * 15,
 		},
 		DHTDiscovery: &misc.DHTDiscoveryConfig{
-			BootstrapPeers: &bootstrapPeers,
+			BootstrapPeers: &dht.DefaultBootstrapPeers,
 			Enabled:        false,
 		},
 	}
