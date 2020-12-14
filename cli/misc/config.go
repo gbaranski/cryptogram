@@ -28,8 +28,6 @@ type Config struct {
 	// Unique string to identify group of nodes. Share this with your friends to let them connect with you
 	RendezvousString *string
 	Nickname         *string
-	ListenAddresses  *[]maddr.Multiaddr
-	ProtocolID       string
 	MDNSDiscovery    *MDNSDiscoveryConfig
 	DHTDiscovery     *DHTDiscoveryConfig
 }
@@ -47,6 +45,7 @@ func GetConfig() *Config {
 
 	dhtEnabled := flag.Bool("dht", false, "True if DHT discovery should be enabled")
 	mdnsEnabled := flag.Bool("mdns", false, "True if MDNS discovery should be enabled")
+	mdnsInterval := flag.Int("mdnsinterval", 900, "MDNS Interval in seconds, by default 15 minutes")
 	rendezvousString := flag.String("rendezvous", "cryptogram-rendezvous", "Unique string to identify group of nodes. Share this with your friends to let them connect with you")
 	flag.Parse()
 
@@ -63,10 +62,9 @@ func GetConfig() *Config {
 	config := &Config{
 		RendezvousString: rendezvousString,
 		Nickname:         nickname,
-		ListenAddresses:  nil,
 		MDNSDiscovery: &MDNSDiscoveryConfig{
 			Enabled:  *mdnsEnabled,
-			Interval: time.Minute * 15,
+			Interval: time.Duration(*mdnsInterval) * time.Second,
 		},
 		DHTDiscovery: &DHTDiscoveryConfig{
 			BootstrapPeers: &dht.DefaultBootstrapPeers,

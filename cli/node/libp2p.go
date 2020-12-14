@@ -20,7 +20,7 @@ type API struct {
 
 // CreateAPI creates libp2p API
 func CreateAPI(ctx *context.Context, config *misc.Config) (*API, error) {
-	host, err := libp2p.New(*ctx, libp2p.ListenAddrStrings("/ip4/0.0.0.0/tcp/0"))
+	host, err := libp2p.New(*ctx, libp2p.ListenAddrStrings("/ip4/0.0.0.0/tcp/0", "/ip6/::/tcp/0"))
 	if err != nil {
 		return nil, err
 	}
