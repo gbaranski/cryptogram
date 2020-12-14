@@ -1,5 +1,5 @@
 # Cryptogram
-Fully decentralized P2P messaging app built on top of [LibP2P](https://libp2p.io/). Currently only CLI version is available.
+Decentralized P2P messaging app built on top of [LibP2P](https://libp2p.io/). Currently only CLI version is available.
 
 ![CLI Showcase](docs/cli-showcase-1.gif)
 
