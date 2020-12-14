@@ -2,35 +2,16 @@ package main
 
 import (
 	"context"
-	"flag"
 	"log"
-	"time"
 
 	"github.com/gbaranski/cryptogram/cli/chat"
 	"github.com/gbaranski/cryptogram/cli/misc"
-	dht "github.com/libp2p/go-libp2p-kad-dht"
 
 	node "github.com/gbaranski/cryptogram/cli/node"
 )
 
 func main() {
-	nick := flag.String("nick", "Anonymous", "Your nickname")
-	flag.Parse()
-
-	config := &misc.Config{
-		RendezvousString: "cryptogram-rendezvous",
-		ListenAddresses:  nil,
-		ProtocolID:       "/chat/1.0.0",
-		MDNSDiscovery: &misc.MDNSDiscoveryConfig{
-			Enabled:  true,
-			Interval: time.Minute * 15,
-		},
-		DHTDiscovery: &misc.DHTDiscoveryConfig{
-			BootstrapPeers: &dht.DefaultBootstrapPeers,
-			Enabled:        false,
-		},
-	}
-
+	config := misc.GetConfig()
 	log.Println("-- Getting an LibP2P host running -- ")
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -43,7 +24,7 @@ func main() {
 	if err != nil {
 		log.Panicln("Failed creating room ", err)
 	}
-	newChat := chat.CreateChat(ctx, api.PubSub, room, nick, (*api.Host).ID())
+	newChat := chat.CreateChat(ctx, api.PubSub, room, config.Nickname, (*api.Host).ID())
 
 	if err != nil {
 		log.Panicln("Error when creating chat: ", err)
