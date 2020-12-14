@@ -6,6 +6,7 @@ import (
 	"log"
 	"strings"
 
+	"github.com/gbaranski/cryptogram/cli/misc"
 	"github.com/gdamore/tcell/v2"
 	pubsub "github.com/libp2p/go-libp2p-pubsub"
 	"github.com/rivo/tview"
@@ -145,7 +146,7 @@ func (ui *UI) displayChatMessage(cm *Message) {
 	if len(cm.Sender.Nickname) < 1 {
 		cm.Sender.Nickname = "Unknown"
 	}
-	prompt := withColor(color, fmt.Sprintf("<%s>:", cm.Sender.Nickname))
+	prompt := misc.WithColor(color, fmt.Sprintf("<%s>:", cm.Sender.Nickname))
 	fmt.Fprintf(ui.msgView, "%s %s\n", prompt, cm.Text)
 }
 
@@ -159,7 +160,7 @@ func (ui *UI) displayPeerEvent(e *pubsub.PeerEvent) {
 }
 
 func (ui *UI) printSystemMessage(args ...interface{}) {
-	prompt := withColor("red", "<System>:")
+	prompt := misc.WithColor("red", "<System>:")
 	fmt.Fprintln(ui.msgView, prompt, fmt.Sprint(args...))
 }
 
@@ -217,9 +218,4 @@ func (ui *UI) handleEvents() {
 			return
 		}
 	}
-}
-
-// withColor wraps a string with color tags for display in the messages text box.
-func withColor(color, msg string) string {
-	return fmt.Sprintf("[%s]%s[-]", color, msg)
 }
