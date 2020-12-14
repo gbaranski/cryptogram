@@ -42,13 +42,13 @@ go build
 ```
 
 ### Configuration
-| Name                        | Description                                                                                                                           |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `--nick`                    | Nickname to identify yourself, by default `$USER` env var, if not set, generates random one                                           |
-| `--dht`                     | Enables DHT Peer Discovery                                                                                                            |
-| `--mdns`                    | Enables MDNS Peer Discovery                                                                                                           |
-| `--mdnsinterval <seconds>`  | Configures how often MDNS packet should be sent, default: 900(15min)                                                                  |
-| `--rendezvousname <string>` | Unique string to identify group of nodes. Share this with your friends to let them connect with you. Default: `cryptogram-rendezvous` |
+| Name                        | Description                                                                                                                                |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `--nick <string>`           | Sets nickname to identify yourself, by default `$USER` env var, if not set, generates random one                                           |
+| `--dht`                     | Enables DHT Peer Discovery                                                                                                                 |
+| `--mdns`                    | Enables MDNS Peer Discovery                                                                                                                |
+| `--mdnsinterval <seconds>`  | Configures how often MDNS packet should be sent, default: 900(15min)                                                                       |
+| `--rendezvousname <string>` | Sets unique string to identify group of nodes. Share this with your friends to let them connect with you. Default: `cryptogram-rendezvous` |
 
 
 ## Peer discovery
