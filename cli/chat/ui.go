@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"strings"
-	"time"
 
 	"github.com/gdamore/tcell/v2"
 	pubsub "github.com/libp2p/go-libp2p-pubsub"
@@ -188,9 +187,6 @@ func (ui *UI) handleCommand(command string) {
 // and displays messages received from the chat room. It also periodically
 // refreshes the list of peers in the UI.
 func (ui *UI) handleEvents() {
-	peerRefreshTicker := time.NewTicker(time.Second)
-	defer peerRefreshTicker.Stop()
-
 	for {
 		select {
 		case input := <-ui.inputCh:
@@ -212,8 +208,6 @@ func (ui *UI) handleEvents() {
 			ui.displayChatMessage(m)
 		case e := <-ui.room.peerEventCh:
 			ui.displayPeerEvent(e)
-		case <-peerRefreshTicker.C:
-			// refresh the list of peers in the chat room periodically
 			ui.refreshPeers()
 		case <-(*ui.room.context).Done():
 			fmt.Println("Context done")
