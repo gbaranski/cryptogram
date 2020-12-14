@@ -23,10 +23,10 @@ cd cryptogram/cli
 
 #### Run directly
 ```bash
-# Run with MDNS discovery and nickname "Charlie"
+# Run with MDNS peer discovery and nickname "Charlie"
 go run main.go -mdns --nick Charlie 
 
-# Run with DHT discovery with default bootstrap settings and nickname "Charlie"
+# Run with DHT peer discovery with default bootstrap settings and nickname "Charlie"
 go run main.go -dht --nick Charlie 
 ```
 
@@ -34,7 +34,7 @@ go run main.go -dht --nick Charlie
 ```bash
 # Compile packages and dependencies into single executable
 go build
-# Run with DHT discovery with default bootstrap settings and nickname "Charlie"
+# Run with DHT peer discovery with default bootstrap settings and nickname "Charlie"
 ./cli -dht --nick Charlie
 ```
 
