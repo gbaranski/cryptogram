@@ -24,13 +24,13 @@ cd cryptogram/cli
 #### Run directly
 ```bash
 # Run with MDNS peer discovery, nickname will be $USER enviroment variable
-go run main.go -mdns
+go run main.go --mdns
 
 # Run with MDNS peer discovery and custom nickname "Charlie"
-go run main.go -mdns --nick Charlie 
+go run main.go --mdns --nick Charlie 
 
 # Run with DHT peer discovery with default bootstrap settings and custom nickname "Charlie"
-go run main.go -dht --nick Charlie 
+go run main.go --dht --nick Charlie 
 ```
 
 #### Compile to single executable
