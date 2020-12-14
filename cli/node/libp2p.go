@@ -10,7 +10,6 @@ import (
 
 	"github.com/gbaranski/cryptogram/cli/discovery"
 	misc "github.com/gbaranski/cryptogram/cli/misc"
-	"github.com/libp2p/go-libp2p-core/protocol"
 )
 
 // API used for holding current node state
@@ -32,9 +31,6 @@ func CreateAPI(ctx *context.Context, config *misc.Config) (*API, error) {
 	}
 	ps, err := pubsub.NewGossipSub(*ctx, host)
 
-	// Set a function as stream handler. This function is called when a peer
-	// initiates a connection and starts a stream with this peer.
-	host.SetStreamHandler(protocol.ID(config.ProtocolID), misc.HandleNetworkStream)
 	if config.DHTDiscovery.Enabled {
 		log.Println("Initializing DHT Discovery")
 		_, _, err := discovery.SetupDHTDiscovery(ctx, &host, config)
