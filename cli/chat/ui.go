@@ -3,7 +3,6 @@ package chat
 import (
 	"context"
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/gdamore/tcell/v2"
@@ -163,21 +162,38 @@ func (ui *UI) printSystemMessage(args ...interface{}) {
 	fmt.Fprintln(ui.msgView, prompt, fmt.Sprint(args...))
 }
 
+func (ui *UI) printErrorMessage(when string, err error) {
+	prompt := withColor("darkred", "<Error>:")
+	fmt.Fprintln(ui.msgView, fmt.Sprintf("%s Error occured when %s: %s", prompt, when, err.Error()))
+}
+
 func (ui *UI) handleCommand(command string) {
 	args := strings.Split(command, " ")
 	switch args[0] {
 	case "join":
-		ui.room.close()
+		err := ui.room.close()
+		if err != nil {
+			ui.printErrorMessage("closing room", err)
+			return
+		}
 		room, err := CreateRoom(context.Background(), ui.chat.pubsub, args[1], ui.chat.msgSender.PeerID)
 		if err != nil {
-			log.Panicln("Error when creating new room ", err)
+			ui.printErrorMessage("creating room", err)
+			return
 		}
 		ui.room = room
 		ui.refreshPeers()
 		ui.updateRoomTitle()
 		ui.printSystemMessage("Successfully joined room: ", args[1])
 	case "help":
-		ui.printSystemMessage("Commands\n/join <room-name>")
+		ui.printSystemMessage(`Commands:
+		  /join <room-name>		- Joins a room
+		  /topics 				 - Prints out all subscribed topics`)
+	case "topics":
+		for i, t := range ui.chat.pubsub.GetTopics() {
+			ui.printSystemMessage("Subscribed topics: ")
+			fmt.Fprintf(ui.msgView, "%d - %s\n", i, t)
+		}
 	default:
 		ui.printSystemMessage("Unknown command, use /help to list commands")
 	}
@@ -201,14 +217,18 @@ func (ui *UI) handleEvents() {
 			}
 			err := ui.room.sendMessage(context.Background(), message)
 			if err != nil {
-				log.Panicf("publish error: %s\n", err)
+				ui.printErrorMessage("sending message", err)
 			}
 		case m := <-ui.room.msgCh:
 			// when we receive a message from the chat room, print it to the message window
-			ui.displayChatMessage(m)
+			if m != nil {
+				ui.displayChatMessage(m)
+			}
 		case e := <-ui.room.peerEventCh:
-			ui.displayPeerEvent(e)
-			ui.refreshPeers()
+			if e != nil {
+				ui.displayPeerEvent(e)
+				ui.refreshPeers()
+			}
 		case <-(*ui.room.context).Done():
 			fmt.Println("Context done")
 			return
