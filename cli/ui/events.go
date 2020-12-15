@@ -34,6 +34,7 @@ func (ui *UI) handleCommand(command string) {
 		  /topics 				 - Prints out all subscribed topics
 		  /free					- Removes garbage from memory
 		  /stats				   - Prints memory statistics
+		  /exit					- Exits the program
 		  `)
 	case "free":
 		memStats := misc.GetMemStats()
