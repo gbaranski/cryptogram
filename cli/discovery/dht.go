@@ -61,10 +61,7 @@ func searchPeersLoop(
 	routingDiscovery *discovery.RoutingDiscovery,
 	config *misc.Config,
 	ui *ui.UI) {
-	// Do the init search
-	searchPeers(ctx, host, routingDiscovery, config, ui)
-
-	ticker := time.NewTicker(5 * time.Second)
+	ticker := time.NewTicker(time.Second)
 	go func() {
 		for {
 			select {
@@ -102,7 +99,7 @@ func SetupDHTDiscovery(ctx *context.Context, host *host.Host, config *misc.Confi
 	discovery.Advertise(*ctx, routingDiscovery, *config.RendezvousName)
 	ui.LogDebug("Successfully announced ourselfs, other peers can now find us!")
 
-	go searchPeers(ctx, host, routingDiscovery, config, ui)
+	go searchPeersLoop(ctx, host, routingDiscovery, config, ui)
 
 	return routingDiscovery, kademliaDHT, nil
 }

@@ -28,7 +28,7 @@ func main() {
 	if err != nil {
 		log.Panicln("Failed creating room ", err)
 	}
-	newChat := chat.CreateChat(ctx, api.PubSub, room, config.Nickname, (*api.Host).ID())
+	newChat := chat.CreateChat(ctx, api.PubSub, config, api.Host)
 
 	if err != nil {
 		log.Panicln("Error when creating chat: ", err)
