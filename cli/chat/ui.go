@@ -22,6 +22,7 @@ type UI struct {
 	app       *tview.Application
 	peersView *tview.TextView
 	msgView   *tview.TextView
+	history   *[]*string
 	inputCh   chan string
 	doneCh    chan struct{}
 }
@@ -71,6 +72,30 @@ func NewUI(chat *Chat, room *Room) *UI {
 		input.SetText("")
 	})
 
+	var history []*string
+	hc := 0
+	input.SetInputCapture(func(e *tcell.EventKey) *tcell.EventKey {
+		switch e.Key() {
+		case tcell.KeyUp:
+			if hc >= len(history) || hc < 0 {
+				return e
+			}
+			hc++
+			input.SetText(*history[len(history)-hc])
+		case tcell.KeyDown:
+			if hc <= 1 {
+				hc = 0
+				input.SetText("")
+				return e
+			}
+			hc--
+			input.SetText(*history[len(history)-hc])
+		default:
+			hc = 0
+		}
+		return e
+	})
+
 	// make a text view to hold the list of peers in the room, updated by ui.refreshPeers()
 	peersView := tview.NewTextView()
 	peersView.SetBorder(true)
@@ -96,6 +121,7 @@ func NewUI(chat *Chat, room *Room) *UI {
 		room:      room,
 		app:       app,
 		peersView: peersView,
+		history:   &history,
 		msgView:   msgView,
 		inputCh:   inputCh,
 		doneCh:    make(chan struct{}, 1),
@@ -220,6 +246,10 @@ func (ui *UI) handleEvents() {
 	for {
 		select {
 		case input := <-ui.inputCh:
+			// Append to history only if the last str in history isn't the same as input
+			if len(*ui.history) == 0 || *(*ui.history)[len(*ui.history)-1] != input {
+				*ui.history = append(*ui.history, &input)
+			}
 			if strings.HasPrefix(input, "/") {
 				ui.handleCommand(strings.TrimPrefix(input, "/"))
 				continue
