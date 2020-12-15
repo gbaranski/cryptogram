@@ -37,7 +37,7 @@ func (ui *UI) handleCommand(command string) {
 		  /join <room-name>		- Joins a room
 		  /topics 				 - Prints out all subscribed topics
 		  /free					- Removes garbage from memory
-		  /stats				   - Prints memory statistics
+		  /stats				   - Prints statistics
 		  /exit					- Exits the program
 		  `)
 	case "free":
@@ -48,7 +48,9 @@ func (ui *UI) handleCommand(command string) {
 		ui.Log(fmt.Sprintf("Freed %fMiB of memory", memStats.Alloc-newMemStats.Alloc))
 	case "stats":
 		memStats := misc.GetMemStats()
-		ui.Log(fmt.Sprintf("Heap alloc - %fMiB", memStats.Alloc))
+		ui.Log(fmt.Sprintf(`Statistics: 
+		Connected peers: %d
+		Heap alloc - %fMiB`, len(ui.chat.ListAllPeers()), memStats.Alloc))
 	case "topics":
 		for i, t := range ui.chat.PubSub.GetTopics() {
 			ui.Log("Subscribed topics: ")
