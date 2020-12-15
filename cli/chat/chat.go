@@ -4,26 +4,23 @@ import (
 	"context"
 
 	"github.com/gbaranski/cryptogram/cli/misc"
-	"github.com/libp2p/go-libp2p-core/host"
-	pubsub "github.com/libp2p/go-libp2p-pubsub"
+	"github.com/gbaranski/cryptogram/cli/node"
 )
 
 // Chat hold current chat state
 type Chat struct {
 	Context   *context.Context
-	PubSub    *pubsub.PubSub
-	Host      *host.Host
+	API       *node.API
 	MsgSender *MessageSender
 }
 
 // CreateChat creates chat
-func CreateChat(context context.Context, ps *pubsub.PubSub, config *misc.Config, host *host.Host) *Chat {
+func CreateChat(context context.Context, config *misc.Config, API *node.API) *Chat {
 	chat := &Chat{
 		Context: &context,
-		PubSub:  ps,
-		Host:    host,
+		API:     API,
 		MsgSender: &MessageSender{
-			PeerID:   (*host).ID(),
+			PeerID:   (*API.Host).ID(),
 			Nickname: *config.Nickname,
 		},
 	}

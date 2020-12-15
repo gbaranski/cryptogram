@@ -23,7 +23,7 @@ func (ui *UI) handleCommand(command string) {
 			// Add the missing <room-name>
 			args = append(args, *ui.config.Room)
 		}
-		room, err := chat.CreateRoom(context.Background(), ui.chat.PubSub, &args[1], ui.chat.MsgSender.PeerID)
+		room, err := chat.CreateRoom(context.Background(), ui.chat.API.PubSub, &args[1], ui.chat.MsgSender.PeerID)
 		if err != nil {
 			ui.LogError("creating room", err)
 			return
@@ -48,15 +48,17 @@ func (ui *UI) handleCommand(command string) {
 		ui.Log(fmt.Sprintf("Freed %fMiB of memory", memStats.Alloc-newMemStats.Alloc))
 	case "stats":
 		memStats := misc.GetMemStats()
-		peers := (*ui.chat.Host).Network().Peers()
+		peers := (*ui.chat.API.Host).Network().Peers()
 		ui.Log(fmt.Sprintf(`Statistics: 
 		Connected peers: %d
 		Heap alloc - %fMiB`, len(peers), memStats.Alloc))
 	case "topics":
-		for i, t := range ui.chat.PubSub.GetTopics() {
+		for i, t := range ui.chat.API.PubSub.GetTopics() {
 			ui.Log("Subscribed topics: ")
 			fmt.Fprintf(ui.msgView, "%d - %s\n", i, t)
 		}
+	case "refresh":
+
 	case "exit":
 		ui.end()
 	default:
