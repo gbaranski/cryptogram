@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/gbaranski/cryptogram/cli/chat"
@@ -14,7 +15,7 @@ func main() {
 	config := misc.GetConfig()
 	ui := ui.CreateUI(config)
 	go ui.RunApp()
-	ui.Log("-- Getting an LibP2P host running -- ")
+	ui.Log(fmt.Sprintf("Hi %s, use /help to get info about commands", *config.Nickname))
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

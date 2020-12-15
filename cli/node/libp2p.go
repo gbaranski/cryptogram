@@ -29,10 +29,13 @@ func CreateAPI(ctx *context.Context, config *misc.Config, ui *ui.UI) (*API, erro
 	if err != nil {
 		return nil, err
 	}
-	ui.Log("LibP2P host is running ID:", host.ID())
-	ui.Log("Host addresses: ")
-	for _, addr := range host.Addrs() {
-		ui.Log(addr)
+	ui.Log("LibP2P host is running ID: ", host.ID())
+
+	if *config.Debug {
+		ui.LogDebug("Host addresses: ")
+		for _, addr := range host.Addrs() {
+			ui.LogDebug(addr)
+		}
 	}
 	ps, err := pubsub.NewGossipSub(*ctx, host)
 

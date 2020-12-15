@@ -18,6 +18,7 @@ type discoveryNotifee struct {
 // interface to be called when new  peer is found
 func (n *discoveryNotifee) HandlePeerFound(pi peer.AddrInfo) {
 	err := (*(n.Host)).Connect(context.Background(), pi)
+	n.ui.LogDebug("MDNS Peer found ID: ", pi.ID)
 	if err != nil {
 		n.ui.LogError("connecting to MDNS peer", err)
 		return
