@@ -19,7 +19,11 @@ func (ui *UI) handleCommand(command string) {
 			ui.LogError("closing room", err)
 			return
 		}
-		room, err := chat.CreateRoom(context.Background(), ui.chat.PubSub, args[1], ui.chat.MsgSender.PeerID)
+		if len(args) < 2 {
+			// Add the missing <room-name>
+			args = append(args, *ui.config.Room)
+		}
+		room, err := chat.CreateRoom(context.Background(), ui.chat.PubSub, &args[1], ui.chat.MsgSender.PeerID)
 		if err != nil {
 			ui.LogError("creating room", err)
 			return
