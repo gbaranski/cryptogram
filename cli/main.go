@@ -15,7 +15,6 @@ func main() {
 	config := misc.GetConfig()
 	ui := ui.CreateUI(config)
 	go ui.RunApp()
-	ui.Log(fmt.Sprintf("Hi %s, use /help to get info about commands", *config.Nickname))
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -34,6 +33,7 @@ func main() {
 	if err != nil {
 		log.Panicln("Error when creating chat: ", err)
 	}
+	ui.Log(fmt.Sprintf("Hi %s, use /help to get info about commands", *config.Nickname))
 	ui.StartChat(newChat, room)
 	<-ui.DoneCh
 }
