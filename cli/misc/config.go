@@ -32,6 +32,7 @@ type Config struct {
 	MDNSDiscovery  *MDNSDiscoveryConfig
 	DHTDiscovery   *DHTDiscoveryConfig
 	Room           *string
+	Debug          *bool
 }
 
 // GetConfig retreives config
@@ -51,6 +52,7 @@ func GetConfig() *Config {
 	rendezvousName := flag.String("rendezvousname", "cryptogram-rendezvous", "Unique string to identify group of nodes. Share this with your friends to let them connect with you")
 	insecure := flag.Bool("insecure", false, "Disables security transports, incompatible with other secure transports, use with caution")
 	room := flag.String("room", "general", "Default room you join at the start, can be changed later using /join command")
+	debug := flag.Bool("debug", false, "Debug mode, prints more information")
 	flag.Parse()
 
 	if *dhtEnabled == false && *mdnsEnabled == false {
@@ -68,6 +70,7 @@ func GetConfig() *Config {
 		Nickname:       nickname,
 		Insecure:       insecure,
 		Room:           room,
+		Debug:          debug,
 		MDNSDiscovery: &MDNSDiscoveryConfig{
 			Enabled:  *mdnsEnabled,
 			Interval: time.Duration(*mdnsInterval) * time.Second,
