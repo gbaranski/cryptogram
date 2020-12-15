@@ -2,7 +2,6 @@ package node
 
 import (
 	"context"
-	"log"
 
 	"github.com/libp2p/go-libp2p"
 	host "github.com/libp2p/go-libp2p-host"
@@ -10,6 +9,7 @@ import (
 
 	"github.com/gbaranski/cryptogram/cli/discovery"
 	misc "github.com/gbaranski/cryptogram/cli/misc"
+	"github.com/gbaranski/cryptogram/cli/ui"
 )
 
 // API used for holding current node state
@@ -19,7 +19,7 @@ type API struct {
 }
 
 // CreateAPI creates libp2p API
-func CreateAPI(ctx *context.Context, config *misc.Config) (*API, error) {
+func CreateAPI(ctx *context.Context, config *misc.Config, ui *ui.UI) (*API, error) {
 	var opts []libp2p.Option
 	opts = append(opts, libp2p.ListenAddrStrings("/ip4/0.0.0.0/tcp/0", "/ip6/::/tcp/0"))
 	if *config.Insecure {
@@ -29,23 +29,23 @@ func CreateAPI(ctx *context.Context, config *misc.Config) (*API, error) {
 	if err != nil {
 		return nil, err
 	}
-	log.Println("LibP2P host is running ID:", host.ID())
-	log.Println("Host addresses: ")
+	ui.Log("LibP2P host is running ID:", host.ID())
+	ui.Log("Host addresses: ")
 	for _, addr := range host.Addrs() {
-		log.Println(addr)
+		ui.Log(addr)
 	}
 	ps, err := pubsub.NewGossipSub(*ctx, host)
 
 	if config.DHTDiscovery.Enabled {
-		log.Println("Initializing DHT Discovery")
-		_, _, err := discovery.SetupDHTDiscovery(ctx, &host, config)
+		ui.Log("Initializing DHT Discovery")
+		_, _, err := discovery.SetupDHTDiscovery(ctx, &host, config, ui)
 		if err != nil {
 			return nil, err
 		}
 	}
 	if config.MDNSDiscovery.Enabled {
-		log.Println("Initializing MDNS Discovery")
-		err := discovery.SetupMDNSDiscovery(ctx, &host, config)
+		ui.Log("Initializing MDNS Discovery")
+		err := discovery.SetupMDNSDiscovery(ctx, &host, config, ui)
 		if err != nil {
 			return nil, err
 		}

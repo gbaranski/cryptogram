@@ -6,16 +6,20 @@ import (
 
 	"github.com/gbaranski/cryptogram/cli/chat"
 	"github.com/gbaranski/cryptogram/cli/misc"
-
-	node "github.com/gbaranski/cryptogram/cli/node"
+	"github.com/gbaranski/cryptogram/cli/node"
+	"github.com/gbaranski/cryptogram/cli/ui"
 )
 
 func main() {
 	config := misc.GetConfig()
-	log.Println("-- Getting an LibP2P host running -- ")
+	ui := ui.CreateUI(config)
+	go ui.RunApp()
+	ui.Log("-- Getting an LibP2P host running -- ")
+
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	api, err := node.CreateAPI(&ctx, config)
+	api, err := node.CreateAPI(&ctx, config, ui)
+
 	if err != nil {
 		log.Panicln("Failed creating host: ", err)
 	}
@@ -29,10 +33,6 @@ func main() {
 	if err != nil {
 		log.Panicln("Error when creating chat: ", err)
 	}
-
-	ui := chat.NewUI(newChat, room)
-	if err = ui.Run(); err != nil {
-		log.Panicln("error running text UI: ", err)
-	}
-
+	ui.StartChat(newChat, room)
+	select {}
 }

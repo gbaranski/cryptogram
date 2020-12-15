@@ -11,12 +11,12 @@ import (
 
 // Room is room
 type Room struct {
-	msgCh       chan *Message
-	peerEventCh chan *pubsub.PeerEvent
-	context     *context.Context
-	topic       *pubsub.Topic
-	sub         *pubsub.Subscription
-	teh         *pubsub.TopicEventHandler
+	MsgCh       chan *Message
+	PeerEventCh chan *pubsub.PeerEvent
+	Context     *context.Context
+	Topic       *pubsub.Topic
+	Sub         *pubsub.Subscription
+	Teh         *pubsub.TopicEventHandler
 }
 
 // CreateRoom creates Room for desired RoomName
@@ -34,12 +34,12 @@ func CreateRoom(context context.Context, ps *pubsub.PubSub, roomName string, pee
 		return nil, err
 	}
 	room := &Room{
-		msgCh:       make(chan *Message, RoomBufSize),
-		peerEventCh: make(chan (*pubsub.PeerEvent)),
-		context:     &context,
-		topic:       topic,
-		sub:         subscription,
-		teh:         teh,
+		MsgCh:       make(chan *Message, RoomBufSize),
+		PeerEventCh: make(chan (*pubsub.PeerEvent)),
+		Context:     &context,
+		Topic:       topic,
+		Sub:         subscription,
+		Teh:         teh,
 	}
 	go room.readMessagesLoop(&peerID)
 	go room.readPeerEventsLoop()
@@ -48,18 +48,18 @@ func CreateRoom(context context.Context, ps *pubsub.PubSub, roomName string, pee
 
 func (room *Room) readPeerEventsLoop() {
 	for {
-		e, err := room.teh.NextPeerEvent(*room.context)
+		e, err := room.Teh.NextPeerEvent(*room.Context)
 		if err != nil {
 			fmt.Println("Error occured readPeerEventsLoop", err)
 			return
 		}
-		room.peerEventCh <- &e
+		room.PeerEventCh <- &e
 	}
 }
 
 func (room *Room) readMessagesLoop(peerID *peer.ID) {
 	for {
-		msg, err := room.sub.Next(*room.context)
+		msg, err := room.Sub.Next(*room.Context)
 		if err != nil {
 			// fmt.Println("Error occured readMessagesLoop", err)
 			return
@@ -67,24 +67,26 @@ func (room *Room) readMessagesLoop(peerID *peer.ID) {
 		cm := new(Message)
 		err = json.Unmarshal(msg.Data, cm)
 		// send valid messages onto the Messages channel
-		room.msgCh <- cm
+		room.MsgCh <- cm
 	}
 }
 
-func (room *Room) sendMessage(context context.Context, message *Message) error {
+// SendMessage sends message
+func (room *Room) SendMessage(context context.Context, message *Message) error {
 	msgBytes, err := json.Marshal(message)
 	if err != nil {
 		return err
 	}
-	err = room.topic.Publish(context, msgBytes)
+	err = room.Topic.Publish(context, msgBytes)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (room *Room) close() error {
-	room.sub.Cancel()
-	room.teh.Cancel()
-	return room.topic.Close()
+// Close closes room
+func (room *Room) Close() error {
+	room.Sub.Cancel()
+	room.Teh.Cancel()
+	return room.Topic.Close()
 }

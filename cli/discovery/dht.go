@@ -2,19 +2,19 @@ package discovery
 
 import (
 	"context"
-	"log"
 	"sync"
 
 	misc "github.com/gbaranski/cryptogram/cli/misc"
+	"github.com/gbaranski/cryptogram/cli/ui"
 	"github.com/libp2p/go-libp2p-core/host"
 	"github.com/libp2p/go-libp2p-core/peer"
 	discovery "github.com/libp2p/go-libp2p-discovery"
 	dht "github.com/libp2p/go-libp2p-kad-dht"
 )
 
-func connectBootstrapNodes(ctx *context.Context, host *host.Host, config *misc.Config) error {
+func connectBootstrapNodes(ctx *context.Context, host *host.Host, config *misc.Config, ui *ui.UI) error {
 
-	log.Println("\n-- Going to connect to a few nodes in the Network as bootstrappers --")
+	ui.Log("-- Going to connect to a few nodes in the Network as bootstrappers --")
 	// Let's connect to the bootstrap nodes first. They will tell us about the
 	// other nodes in the network.
 	var wg sync.WaitGroup
@@ -24,9 +24,9 @@ func connectBootstrapNodes(ctx *context.Context, host *host.Host, config *misc.C
 		go func() {
 			defer wg.Done()
 			if err := (*host).Connect(*ctx, *peerinfo); err != nil {
-				log.Println(err)
+				ui.LogError("connecting to bootstrap node", err)
 			} else {
-				log.Println("Connection established with bootstrap node:", *peerinfo)
+				ui.Log("Connection established with bootstrap node:", *peerinfo)
 			}
 		}()
 	}
@@ -57,7 +57,7 @@ func findAndConnectPeers(
 }
 
 // SetupDHTDiscovery set ups DHT Discovery
-func SetupDHTDiscovery(ctx *context.Context, host *host.Host, config *misc.Config) (*discovery.RoutingDiscovery, *dht.IpfsDHT, error) {
+func SetupDHTDiscovery(ctx *context.Context, host *host.Host, config *misc.Config, ui *ui.UI) (*discovery.RoutingDiscovery, *dht.IpfsDHT, error) {
 	// Start a DHT, for use in peer discovery. We can't just make a new DHT
 	// client because we want each peer to maintain its own local copy of the
 	// DHT, so that the bootstrapping node of the DHT can go down without
@@ -68,22 +68,22 @@ func SetupDHTDiscovery(ctx *context.Context, host *host.Host, config *misc.Confi
 	}
 	// Bootstrap the DHT. In the default configuration, this spawns a Background
 	// thread that will refresh the peer table every five minutes.
-	log.Println("Bootstrapping the DHT")
+	ui.Log("Bootstrapping the DHT")
 	if err = kademliaDHT.Bootstrap(*ctx); err != nil {
 		return nil, nil, err
 	}
 
-	err = connectBootstrapNodes(ctx, host, config)
+	err = connectBootstrapNodes(ctx, host, config, ui)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	// We use a rendezvous point "cryptogram-rendezvous" to announce our location.
 	// This is like telling your friends to meet you at the Eiffel Tower.
-	log.Println("Announcing ourselves...")
+	ui.Log("Announcing ourselves...")
 	routingDiscovery := discovery.NewRoutingDiscovery(kademliaDHT)
 	discovery.Advertise(*ctx, routingDiscovery, *config.RendezvousName)
-	log.Println("Successfully announced!")
+	ui.Log("Successfully announced!")
 
 	go findAndConnectPeers(ctx, host, routingDiscovery, config)
 

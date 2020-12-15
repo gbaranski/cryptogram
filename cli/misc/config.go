@@ -31,6 +31,7 @@ type Config struct {
 	Insecure       *bool
 	MDNSDiscovery  *MDNSDiscoveryConfig
 	DHTDiscovery   *DHTDiscoveryConfig
+	Room           *string
 }
 
 // GetConfig retreives config
@@ -49,6 +50,7 @@ func GetConfig() *Config {
 	mdnsInterval := flag.Int("mdnsinterval", 900, "MDNS Interval in seconds, by default 15 minutes")
 	rendezvousName := flag.String("rendezvousname", "cryptogram-rendezvous", "Unique string to identify group of nodes. Share this with your friends to let them connect with you")
 	insecure := flag.Bool("insecure", false, "Disables security transports, incompatible with other secure transports, use with caution")
+	room := flag.String("room", "general", "Default room you join at the start, can be changed later using /join command")
 	flag.Parse()
 
 	if *dhtEnabled == false && *mdnsEnabled == false {
@@ -65,6 +67,7 @@ func GetConfig() *Config {
 		RendezvousName: rendezvousName,
 		Nickname:       nickname,
 		Insecure:       insecure,
+		Room:           room,
 		MDNSDiscovery: &MDNSDiscoveryConfig{
 			Enabled:  *mdnsEnabled,
 			Interval: time.Duration(*mdnsInterval) * time.Second,

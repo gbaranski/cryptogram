@@ -9,11 +9,10 @@ import (
 
 // Chat hold current chat state
 type Chat struct {
-	context   *context.Context
-	pubsub    *pubsub.PubSub
-	rooms     []*Room
-	nickname  *string
-	msgSender *MessageSender
+	Context   *context.Context
+	PubSub    *pubsub.PubSub
+	Rooms     []*Room
+	MsgSender *MessageSender
 }
 
 // CreateChat creates chat
@@ -21,10 +20,10 @@ func CreateChat(context context.Context, ps *pubsub.PubSub, defaultRoom *Room, n
 	var rooms []*Room
 	rooms = append(rooms, defaultRoom)
 	chat := &Chat{
-		context: &context,
-		pubsub:  ps,
-		rooms:   rooms,
-		msgSender: &MessageSender{
+		Context: &context,
+		PubSub:  ps,
+		Rooms:   rooms,
+		MsgSender: &MessageSender{
 			PeerID:   peerID,
 			Nickname: *nickname,
 		},
