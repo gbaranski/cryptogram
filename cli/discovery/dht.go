@@ -13,8 +13,6 @@ import (
 )
 
 func connectBootstrapNodes(ctx *context.Context, host *host.Host, config *misc.Config, ui *ui.UI) error {
-
-	ui.Log("-- Going to connect to a few nodes in the Network as bootstrappers --")
 	// Let's connect to the bootstrap nodes first. They will tell us about the
 	// other nodes in the network.
 	var wg sync.WaitGroup
@@ -26,7 +24,7 @@ func connectBootstrapNodes(ctx *context.Context, host *host.Host, config *misc.C
 			if err := (*host).Connect(*ctx, *peerinfo); err != nil {
 				ui.LogError("connecting to bootstrap node", err)
 			} else {
-				ui.Log("Connection established with bootstrap node:", *peerinfo)
+				ui.Log("Connection established with bootstrap node: ", *peerinfo)
 			}
 		}()
 	}
@@ -39,10 +37,10 @@ func findAndConnectPeers(
 	ctx *context.Context,
 	host *host.Host,
 	routingDiscovery *discovery.RoutingDiscovery,
-	config *misc.Config) {
+	config *misc.Config,
+	ui *ui.UI) {
 	// Now, look for others who have announced
 	// This is like your friend telling you the location to meet you.
-	// log.Println("Searching for other peers...")
 	peerChan, err := routingDiscovery.FindPeers(*ctx, *config.RendezvousName)
 	if err != nil {
 		panic(err)
@@ -51,6 +49,8 @@ func findAndConnectPeers(
 		if p.ID == (*host).ID() {
 			continue
 		}
+
+		ui.LogDebug("DHT Peer found ID: ", p.ID)
 		go (*host).Connect(context.Background(), p)
 	}
 
@@ -68,7 +68,6 @@ func SetupDHTDiscovery(ctx *context.Context, host *host.Host, config *misc.Confi
 	}
 	// Bootstrap the DHT. In the default configuration, this spawns a Background
 	// thread that will refresh the peer table every five minutes.
-	ui.Log("Bootstrapping the DHT")
 	if err = kademliaDHT.Bootstrap(*ctx); err != nil {
 		return nil, nil, err
 	}
@@ -80,12 +79,11 @@ func SetupDHTDiscovery(ctx *context.Context, host *host.Host, config *misc.Confi
 
 	// We use a rendezvous point "cryptogram-rendezvous" to announce our location.
 	// This is like telling your friends to meet you at the Eiffel Tower.
-	ui.Log("Announcing ourselves...")
 	routingDiscovery := discovery.NewRoutingDiscovery(kademliaDHT)
 	discovery.Advertise(*ctx, routingDiscovery, *config.RendezvousName)
-	ui.Log("Successfully announced!")
+	ui.LogDebug("Successfully announced ourselfs, other peers can now find us!")
 
-	go findAndConnectPeers(ctx, host, routingDiscovery, config)
+	go findAndConnectPeers(ctx, host, routingDiscovery, config, ui)
 
 	return routingDiscovery, kademliaDHT, nil
 }
