@@ -192,7 +192,7 @@ func (ui *UI) handleCommand(command string) {
 		  /join <room-name>		- Joins a room
 		  /topics 				 - Prints out all subscribed topics
 		  /free					- Removes garbage from memory
-		  /stats				 - Prints statistics
+		  /stats				   - Prints memory statistics
 		  `)
 	case "free":
 		memStats := misc.GetMemStats()
