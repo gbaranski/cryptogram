@@ -7,7 +7,7 @@ require (
 	github.com/benbjohnson/clock v1.1.0 // indirect
 	github.com/btcsuite/btcd v0.21.0-beta // indirect
 	github.com/davidlazar/go-crypto v0.0.0-20200604182044-b73af7476f6c // indirect
-	github.com/gdamore/tcell/v2 v2.0.1-0.20201017141208-acf90d56d591
+	github.com/gdamore/tcell/v2 v2.1.0
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/google/go-cmp v0.5.4 // indirect
@@ -40,12 +40,12 @@ require (
 	golang.org/x/mod v0.4.0 // indirect
 	golang.org/x/net v0.0.0-20201209123823-ac852fbbde11 // indirect
 	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a // indirect
-	golang.org/x/sys v0.0.0-20201214095126-aec9a390925b // indirect
+	golang.org/x/sys v0.0.0-20201214210602-f9fddec55a1e // indirect
 	golang.org/x/text v0.3.4 // indirect
-	golang.org/x/tools v0.0.0-20201211185031-d93e913c1a58 // indirect
+	golang.org/x/tools v0.0.0-20201215192005-fa10ef0b8743 // indirect
 	google.golang.org/grpc v1.34.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
-	honnef.co/go/tools v0.0.1-2020.1.6 // indirect
+	honnef.co/go/tools v0.1.0 // indirect
 )
