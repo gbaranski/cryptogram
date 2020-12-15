@@ -48,9 +48,10 @@ func (ui *UI) handleCommand(command string) {
 		ui.Log(fmt.Sprintf("Freed %fMiB of memory", memStats.Alloc-newMemStats.Alloc))
 	case "stats":
 		memStats := misc.GetMemStats()
+		peers := (*ui.chat.Host).Network().Peers()
 		ui.Log(fmt.Sprintf(`Statistics: 
 		Connected peers: %d
-		Heap alloc - %fMiB`, len(ui.chat.ListAllPeers()), memStats.Alloc))
+		Heap alloc - %fMiB`, len(peers), memStats.Alloc))
 	case "topics":
 		for i, t := range ui.chat.PubSub.GetTopics() {
 			ui.Log("Subscribed topics: ")

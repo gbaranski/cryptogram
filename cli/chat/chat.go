@@ -5,7 +5,6 @@ import (
 
 	"github.com/gbaranski/cryptogram/cli/misc"
 	"github.com/libp2p/go-libp2p-core/host"
-	"github.com/libp2p/go-libp2p-core/peer"
 	pubsub "github.com/libp2p/go-libp2p-pubsub"
 )
 
@@ -13,7 +12,7 @@ import (
 type Chat struct {
 	Context   *context.Context
 	PubSub    *pubsub.PubSub
-	host      *host.Host
+	Host      *host.Host
 	MsgSender *MessageSender
 }
 
@@ -22,16 +21,11 @@ func CreateChat(context context.Context, ps *pubsub.PubSub, config *misc.Config,
 	chat := &Chat{
 		Context: &context,
 		PubSub:  ps,
-		host:    host,
+		Host:    host,
 		MsgSender: &MessageSender{
 			PeerID:   (*host).ID(),
 			Nickname: *config.Nickname,
 		},
 	}
 	return chat
-}
-
-// ListAllPeers returns slice of all peers connected
-func (chat *Chat) ListAllPeers() []peer.ID {
-	return (*chat.host).Network().Peers()
 }
