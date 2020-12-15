@@ -3,6 +3,7 @@ package discovery
 import (
 	"context"
 	"sync"
+	"time"
 
 	misc "github.com/gbaranski/cryptogram/cli/misc"
 	"github.com/gbaranski/cryptogram/cli/ui"
@@ -33,14 +34,13 @@ func connectBootstrapNodes(ctx *context.Context, host *host.Host, config *misc.C
 
 }
 
-func findAndConnectPeers(
+func searchPeers(
 	ctx *context.Context,
 	host *host.Host,
 	routingDiscovery *discovery.RoutingDiscovery,
 	config *misc.Config,
 	ui *ui.UI) {
-	// Now, look for others who have announced
-	// This is like your friend telling you the location to meet you.
+	ui.LogDebug("Searching for peers")
 	peerChan, err := routingDiscovery.FindPeers(*ctx, *config.RendezvousName)
 	if err != nil {
 		panic(err)
@@ -53,7 +53,26 @@ func findAndConnectPeers(
 		ui.LogDebug("DHT Peer found ID: ", p.ID)
 		go (*host).Connect(context.Background(), p)
 	}
+}
 
+func searchPeersLoop(
+	ctx *context.Context,
+	host *host.Host,
+	routingDiscovery *discovery.RoutingDiscovery,
+	config *misc.Config,
+	ui *ui.UI) {
+	// Do the init search
+	searchPeers(ctx, host, routingDiscovery, config, ui)
+
+	ticker := time.NewTicker(5 * time.Second)
+	go func() {
+		for {
+			select {
+			case <-ticker.C:
+				searchPeers(ctx, host, routingDiscovery, config, ui)
+			}
+		}
+	}()
 }
 
 // SetupDHTDiscovery set ups DHT Discovery
@@ -83,7 +102,7 @@ func SetupDHTDiscovery(ctx *context.Context, host *host.Host, config *misc.Confi
 	discovery.Advertise(*ctx, routingDiscovery, *config.RendezvousName)
 	ui.LogDebug("Successfully announced ourselfs, other peers can now find us!")
 
-	go findAndConnectPeers(ctx, host, routingDiscovery, config, ui)
+	go searchPeers(ctx, host, routingDiscovery, config, ui)
 
 	return routingDiscovery, kademliaDHT, nil
 }
