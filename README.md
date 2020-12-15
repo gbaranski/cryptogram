@@ -53,6 +53,17 @@ go build
 | `--mdnsinterval <seconds>`  | Configures MDNS packet inerval, default: 900(15min)                                        |
 | `--rendezvousname <string>` | Sets unique string to identify group of nodes. Default: `cryptogram-rendezvous`            |
 
+### Commands
+| Name                | Description                              |
+| ------------------- | ---------------------------------------- |
+| `/help`             | Shows available commands                 |
+| `/join <room-name>` | Join another room, leave the current one |
+| `/topics`           | Prints out all subscribed topics         |
+| `/free`             | Removes messages and memory garbage      |
+| `/stats`            | Prints out memory statistics             |
+| `/exit`             | Exits the program                        |
+
+
 
 ## Peer discovery
 
