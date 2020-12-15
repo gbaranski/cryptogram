@@ -18,8 +18,9 @@ type UI struct {
 	inputCh   chan *string
 	DoneCh    chan struct{}
 
-	chat *chat.Chat
-	room *chat.Room
+	chat   *chat.Chat
+	room   *chat.Room
+	config *misc.Config
 }
 
 // CreateUI returns UI
@@ -43,6 +44,7 @@ func CreateUI(config *misc.Config) *UI {
 		msgView:   msgView,
 		inputCh:   inputCh,
 		DoneCh:    make(chan struct{}, 1),
+		config:    config,
 	}
 }
 
