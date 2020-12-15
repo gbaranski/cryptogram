@@ -16,7 +16,7 @@ type UI struct {
 	msgView   *tview.TextView
 	history   *[]*string
 	inputCh   chan *string
-	doneCh    chan struct{}
+	DoneCh    chan struct{}
 
 	chat *chat.Chat
 	room *chat.Room
@@ -42,7 +42,7 @@ func CreateUI(config *misc.Config) *UI {
 		history:   history,
 		msgView:   msgView,
 		inputCh:   inputCh,
-		doneCh:    make(chan struct{}, 1),
+		DoneCh:    make(chan struct{}, 1),
 	}
 }
 
@@ -65,5 +65,6 @@ func (ui *UI) StartChat(chat *chat.Chat, room *chat.Room) {
 
 // end signals the event loop to exit gracefully
 func (ui *UI) end() {
-	ui.doneCh <- struct{}{}
+	ui.DoneCh <- struct{}{}
+	ui.app.Stop()
 }

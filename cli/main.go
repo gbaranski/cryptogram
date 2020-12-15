@@ -34,5 +34,5 @@ func main() {
 		log.Panicln("Error when creating chat: ", err)
 	}
 	ui.StartChat(newChat, room)
-	select {}
+	<-ui.DoneCh
 }

@@ -49,6 +49,8 @@ func (ui *UI) handleCommand(command string) {
 			ui.Log("Subscribed topics: ")
 			fmt.Fprintf(ui.msgView, "%d - %s\n", i, t)
 		}
+	case "exit":
+		ui.end()
 	default:
 		ui.Log("Unknown command, use /help to list commands")
 	}
@@ -88,7 +90,7 @@ func (ui *UI) handleEvents() {
 				ui.logPeerEvent(e)
 				ui.refreshPeers()
 			}
-		case <-ui.doneCh:
+		case <-ui.DoneCh:
 			return
 		}
 	}
