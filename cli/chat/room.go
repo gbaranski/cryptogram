@@ -20,8 +20,8 @@ type Room struct {
 }
 
 // CreateRoom creates Room for desired RoomName
-func CreateRoom(context context.Context, ps *pubsub.PubSub, roomName string, peerID peer.ID) (*Room, error) {
-	topic, err := ps.Join(GetTopicName(&roomName))
+func CreateRoom(context context.Context, ps *pubsub.PubSub, roomName *string, peerID peer.ID) (*Room, error) {
+	topic, err := ps.Join(GetTopicName(roomName))
 	if err != nil {
 		return nil, err
 	}
