@@ -57,8 +57,6 @@ func (ui *UI) handleCommand(command string) {
 			ui.Log("Subscribed topics: ")
 			fmt.Fprintf(ui.msgView, "%d - %s\n", i, t)
 		}
-	case "refresh":
-
 	case "exit":
 		ui.end()
 	default:
