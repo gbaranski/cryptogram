@@ -32,10 +32,20 @@ func createInput(label *string, ch chan *string) *tview.InputField {
 	return input
 }
 
-func setupInputHistory(input *tview.InputField) *[]*string {
+func setupInputHistory(input *tview.InputField, msgView *tview.TextView) *[]*string {
 	var history []*string
 	hc := 0
 	input.SetInputCapture(func(e *tcell.EventKey) *tcell.EventKey {
+		if e.Modifiers() == tcell.ModAlt {
+			row, _ := msgView.GetScrollOffset()
+			switch e.Key() {
+			case tcell.KeyDown:
+				msgView.ScrollTo(row+1, 0)
+			case tcell.KeyUp:
+				msgView.ScrollTo(row-1, 0)
+			}
+			return e
+		}
 		switch e.Key() {
 		case tcell.KeyUp:
 			if hc >= len(history) || hc < 0 {

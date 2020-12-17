@@ -27,11 +27,12 @@ type UI struct {
 // It won't actually do anything until you call Run().
 func CreateUI(config *misc.Config) *UI {
 	app := tview.NewApplication()
+	app.EnableMouse(true)
 	// an input field for typing messages into
 	inputCh := make(chan *string, 32)
 	input := createInput(config.Nickname, inputCh)
-	history := setupInputHistory(input)
 	msgView := createMsgView(app.Draw)
+	history := setupInputHistory(input, msgView)
 	peersView := createPeersView()
 	chatPanel := createChatPanel(msgView, peersView)
 	flex := createFlex(chatPanel, input)
