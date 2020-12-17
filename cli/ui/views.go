@@ -44,6 +44,7 @@ func (ui *UI) handleHistory(e *tcell.EventKey) {
 		if ui.hc <= 1 {
 			ui.hc = 0
 			ui.inputField.SetText("")
+			return
 		}
 		ui.hc--
 		ui.inputField.SetText(*ui.history[len(ui.history)-ui.hc])
