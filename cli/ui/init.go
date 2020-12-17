@@ -11,12 +11,14 @@ import (
 // UI is a Text User Interface (TUI) for a ChatRoom.
 // The Run method will draw the UI to the terminal in "fullscreen"
 type UI struct {
-	app       *tview.Application
-	peersView *tview.TextView
-	msgView   *tview.TextView
-	history   *[]*string
-	inputCh   chan *string
-	DoneCh    chan struct{}
+	app        *tview.Application
+	peersView  *tview.TextView
+	msgView    *tview.TextView
+	inputField *tview.InputField
+	history    []*string
+	hc         int
+	inputCh    chan *string
+	DoneCh     chan struct{}
 
 	chat   *chat.Chat
 	room   *chat.Room
@@ -27,26 +29,29 @@ type UI struct {
 // It won't actually do anything until you call Run().
 func CreateUI(config *misc.Config) *UI {
 	app := tview.NewApplication()
-	app.EnableMouse(true)
 	// an input field for typing messages into
 	inputCh := make(chan *string, 32)
-	input := createInput(config.Nickname, inputCh)
+	inputField := createInput(config.Nickname, inputCh)
 	msgView := createMsgView(app.Draw)
-	history := setupInputHistory(input, msgView)
 	peersView := createPeersView()
 	chatPanel := createChatPanel(msgView, peersView)
-	flex := createFlex(chatPanel, input)
+	flex := createFlex(chatPanel, inputField)
 	app.SetRoot(flex, true)
+	history := []*string{}
 
-	return &UI{
-		app:       app,
-		peersView: peersView,
-		history:   history,
-		msgView:   msgView,
-		inputCh:   inputCh,
-		DoneCh:    make(chan struct{}, 1),
-		config:    config,
+	ui := &UI{
+		app:        app,
+		peersView:  peersView,
+		msgView:    msgView,
+		inputField: inputField,
+		hc:         0,
+		history:    history,
+		inputCh:    inputCh,
+		DoneCh:     make(chan struct{}, 1),
+		config:     config,
 	}
+	ui.setupInputCapture()
+	return ui
 }
 
 // RunApp starts UI app

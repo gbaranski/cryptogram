@@ -72,8 +72,9 @@ func (ui *UI) handleEvents() {
 		select {
 		case input := <-ui.inputCh:
 			// Append to history only if the last str in history isn't the same as input
-			if len(*ui.history) == 0 || *(*ui.history)[len(*ui.history)-1] != *input {
-				*ui.history = append(*ui.history, input)
+
+			if len(ui.history) == 0 || *ui.history[len(ui.history)-1] != *input {
+				ui.history = append(ui.history, input)
 			}
 			if strings.HasPrefix(*input, "/") {
 				ui.handleCommand(strings.TrimPrefix(*input, "/"))

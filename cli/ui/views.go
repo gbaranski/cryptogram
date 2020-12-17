@@ -32,41 +32,66 @@ func createInput(label *string, ch chan *string) *tview.InputField {
 	return input
 }
 
-func setupInputHistory(input *tview.InputField, msgView *tview.TextView) *[]*string {
-	var history []*string
-	hc := 0
-	input.SetInputCapture(func(e *tcell.EventKey) *tcell.EventKey {
-		if e.Modifiers() == tcell.ModAlt {
-			row, _ := msgView.GetScrollOffset()
-			switch e.Key() {
-			case tcell.KeyDown:
-				msgView.ScrollTo(row+1, 0)
-			case tcell.KeyUp:
-				msgView.ScrollTo(row-1, 0)
-			}
-			return e
+func (ui *UI) handleHistory(e *tcell.EventKey) {
+	switch e.Key() {
+	case tcell.KeyUp:
+		if ui.hc >= len(ui.history) || ui.hc < 0 {
+			return
 		}
-		switch e.Key() {
-		case tcell.KeyUp:
-			if hc >= len(history) || hc < 0 {
-				return e
+		ui.hc++
+		ui.inputField.SetText(*ui.history[len(ui.history)-ui.hc])
+	case tcell.KeyDown:
+		if ui.hc <= 1 {
+			ui.hc = 0
+			ui.inputField.SetText("")
+		}
+		ui.hc--
+		ui.inputField.SetText(*ui.history[len(ui.history)-ui.hc])
+	default:
+		ui.hc = 0
+	}
+}
+
+func (ui *UI) handleKeyScroll(e *tcell.EventKey) {
+	row, _ := ui.msgView.GetScrollOffset()
+	switch e.Key() {
+	case tcell.KeyDown:
+		ui.msgView.ScrollTo(row+1, 0)
+	case tcell.KeyUp:
+		ui.msgView.ScrollTo(row-1, 0)
+	}
+}
+
+func (ui *UI) setupInputCapture() {
+	ui.inputField.SetInputCapture(func(e *tcell.EventKey) *tcell.EventKey {
+		if e.Key() == tcell.KeyUp || e.Key() == tcell.KeyDown {
+			if e.Modifiers() == tcell.ModAlt {
+				ui.handleKeyScroll(e)
+			} else {
+				ui.handleHistory(e)
 			}
-			hc++
-			input.SetText(*history[len(history)-hc])
-		case tcell.KeyDown:
-			if hc <= 1 {
-				hc = 0
-				input.SetText("")
-				return e
-			}
-			hc--
-			input.SetText(*history[len(history)-hc])
-		default:
-			hc = 0
+		} else if e.Key() == tcell.KeyTAB {
+			ui.app.SetFocus(ui.msgView)
 		}
 		return e
 	})
-	return &history
+	ui.msgView.SetInputCapture(func(e *tcell.EventKey) *tcell.EventKey {
+		if e.Key() == tcell.KeyTAB {
+			// Change to ui.peersView if this one on bottom would be uncommented
+			ui.app.SetFocus(ui.inputField)
+		}
+		return e
+	})
+
+	// Its currently disabled, not sure if scrolling peers is nessesary
+	/*
+		ui.peersView.SetInputCapture(func(e *tcell.EventKey) *tcell.EventKey {
+			if e.Key() == tcell.KeyTAB {
+				ui.app.SetFocus(ui.inputField)
+			}
+			return e
+		})
+	*/
 }
 
 func createMsgView(drawFn func() *tview.Application) *tview.TextView {
