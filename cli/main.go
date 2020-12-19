@@ -60,6 +60,9 @@ func createAPI(ctx *context.Context, config *misc.Config, ui *ui.UI) (*node.API,
 		}
 	}
 	ps, err := pubsub.NewGossipSub(*ctx, host)
+	if err != nil {
+		log.Panicln("Failed creating GossipSub")
+	}
 	var dhtAPI *node.DhtAPI
 
 	if config.DHTDiscovery.Enabled {
