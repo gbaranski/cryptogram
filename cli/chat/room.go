@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 
 	"github.com/libp2p/go-libp2p-core/peer"
 	pubsub "github.com/libp2p/go-libp2p-pubsub"
@@ -66,6 +67,9 @@ func (room *Room) readMessagesLoop(peerID *peer.ID) {
 		}
 		cm := new(Message)
 		err = json.Unmarshal(msg.Data, cm)
+		if err != nil {
+			log.Panicln("Failed unmarshalling message", err)
+		}
 		// send valid messages onto the Messages channel
 		room.MsgCh <- cm
 	}
