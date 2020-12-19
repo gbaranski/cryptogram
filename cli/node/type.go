@@ -1,8 +1,8 @@
 package node
 
 import (
+	core "github.com/libp2p/go-libp2p-core"
 	discovery "github.com/libp2p/go-libp2p-discovery"
-	host "github.com/libp2p/go-libp2p-host"
 	dht "github.com/libp2p/go-libp2p-kad-dht"
 	pubsub "github.com/libp2p/go-libp2p-pubsub"
 )
@@ -15,7 +15,7 @@ type DhtAPI struct {
 
 // API used for holding current node state
 type API struct {
-	Host   *host.Host
+	Host   *core.Host
 	PubSub *pubsub.PubSub
 	DHT    *DhtAPI
 }
