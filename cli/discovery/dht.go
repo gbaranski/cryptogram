@@ -64,10 +64,8 @@ func searchPeersLoop(
 	ticker := time.NewTicker(time.Second)
 	go func() {
 		for {
-			select {
-			case <-ticker.C:
-				searchPeers(ctx, host, routingDiscovery, config, ui)
-			}
+			<-ticker.C
+			searchPeers(ctx, host, routingDiscovery, config, ui)
 		}
 	}()
 }
