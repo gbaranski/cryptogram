@@ -17,7 +17,7 @@ func (ui *UI) Log(args ...interface{}) {
 // LogError logs error
 func (ui *UI) LogError(when string, err error) {
 	prompt := misc.WithColor("darkred", "<Error>:")
-	fmt.Fprintln(ui.msgView, fmt.Sprintf("%s Error occured when %s: %s", prompt, when, err.Error()))
+	fmt.Fprintf(ui.msgView, "%s Error occured when %s: %s", prompt, when, err.Error())
 }
 
 // LogDebug similar to Log but logs only if debug mode
