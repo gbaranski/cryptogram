@@ -55,7 +55,7 @@ func GetConfig() *Config {
 	debug := flag.Bool("debug", false, "Debug mode, prints more information")
 	flag.Parse()
 
-	if *dhtEnabled == false && *mdnsEnabled == false {
+	if !*dhtEnabled && !*mdnsEnabled {
 		fmt.Println("No discovery mode is enabled")
 		fmt.Println("Please run with `-dht` or/and `-mdns` option")
 		os.Exit(1)
