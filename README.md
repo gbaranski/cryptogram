@@ -18,7 +18,6 @@ sudo pacman -S go
 
 ```bash
 git clone https://github.com/gbaranski/cryptogram # Clone this repo
-cd cryptogram/cli
 ```
 
 #### Run directly
