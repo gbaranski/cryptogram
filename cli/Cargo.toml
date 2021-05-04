@@ -3,8 +3,14 @@ name = "cryptogram-cli"
 version = "0.1.0"
 authors = ["gbaranski <root@gbaranski.com>"]
 edition = "2018"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description = "Peer-to-peer messaging app & library"
+repository = "https://github.com/gbaranski/cryptogram"
+keywords = ["peer-to-peer", "networking"]
+categories = ["network-programming", "asynchronous"]
 
 [dependencies]
-
+tokio = { version = "1.5", features = [ "rt-multi-thread", "macros", "time" ] }
+cryptogram-discovery = { path = "../discovery" }
+log = "0.4"
+loggerv = "0.7"
+structopt = "0.3"

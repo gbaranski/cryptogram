@@ -1,17 +1,5 @@
-[package]
-name = "cryptogram"
-version = "0.2.0"
-authors = ["gbaranski <root@gbaranski.com>"]
-description = """
-Decentralized messaging app
-"""
-
-[[bin]]
-path = "cli/src/main.rs"
-name = "cryptogram"
-
 [workspace]
 members = [
   "cli",
-  "core"
+  "discovery"
 ]
